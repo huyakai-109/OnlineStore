@@ -11,8 +11,8 @@ namespace Training.DataAccess.Entities
     [Table("Stocks")]
     public class Stock:IBaseEntity
     {
-        public int Id { get; set; }
-        public int ProductId { get; set; }
+        public long Id { get; set; }
+        public long ProductId { get; set; }
         public int Quantity { get; set; }
         public Product Product { get; set; }
 

@@ -11,7 +11,7 @@ namespace Training.DataAccess.Entities
     [Table("Orders")]
     public class Order : IBaseEntity, IIsDeletedEntity
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public long ClerkId { get; set; }
         public long CustomerId { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
