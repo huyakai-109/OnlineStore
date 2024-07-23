@@ -24,7 +24,6 @@ namespace Training.DataAccess.Configurations
             builder.HasOne(p => p.CreatedByUser)
                    .WithMany()
                    .HasForeignKey(p => p.CreatedBy)
-                   .HasPrincipalKey(u => u.Id)
                    .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(p => p.Category)
                    .WithMany()

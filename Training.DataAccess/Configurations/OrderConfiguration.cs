@@ -20,11 +20,11 @@ namespace Training.DataAccess.Configurations
             builder.HasOne(o => o.Clerk)
                    .WithMany()
                    .HasForeignKey(o => o.ClerkId)
-                   .OnDelete(DeleteBehavior.Restrict);
+                   .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(o => o.Customer)
                    .WithMany()
                    .HasForeignKey(o => o.CustomerId)
-                   .OnDelete(DeleteBehavior.Restrict);
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

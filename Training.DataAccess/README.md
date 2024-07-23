@@ -17,4 +17,4 @@
 3. Set environment `AutoMigration=true` in `appsettings.json` or `appsettings.Development.json` in `Training.Api` project
 4. Run the app
 
-5. Ok 1
+5. Ok 123

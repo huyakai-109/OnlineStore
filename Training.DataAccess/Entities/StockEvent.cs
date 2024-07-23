@@ -12,8 +12,8 @@ namespace Training.DataAccess.Entities
     [Table("StockEvents")]
     public class StockEvent: IBaseEntity
     {
-        public int Id { get; set; }
-        public int StockId { get; set; }
+        public long Id { get; set; }
+        public long StockId { get; set; }
         public int Type { get; set; } // 1 for In, 2 for Out
         public string Reason { get; set; }
         public int Quantity { get; set; }

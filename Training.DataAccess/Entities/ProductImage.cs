@@ -12,9 +12,9 @@ namespace Training.DataAccess.Entities
     [Table("ProductImages")]
     public class ProductImage :IBaseEntity
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public int Order { get; set; }
-        public int ProductId { get; set; }
+        public long ProductId { get; set; }
         public string Path { get; set; }
         public Product Product { get; set; }
 
