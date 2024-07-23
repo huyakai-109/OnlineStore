@@ -14,7 +14,7 @@ namespace Training.DataAccess.Configurations
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.HasKey(u => u.Id);
-            builder.Property(u => u.Id).ValueGeneratedNever();
+            builder.Property(u => u.Id).ValueGeneratedOnAdd();
             builder.Property(u => u.Email).IsRequired().HasMaxLength(255);
             builder.HasIndex(u => u.Email).IsUnique();
             builder.Property(u => u.Password).IsRequired().HasMaxLength(255);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using System.Reflection.Emit;
 using Training.DataAccess.Configurations;
 using Training.DataAccess.Entities;
 
@@ -27,8 +28,14 @@ namespace Training.DataAccess.DbContexts
         protected override void OnModelCreating(ModelBuilder builder)
         {
             //builder.ApplyConfiguration(new ExampleConfiguration());
-            base.OnModelCreating(builder);
-            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            builder.ApplyConfiguration(new UserConfiguration());
+            builder.ApplyConfiguration(new ProductConfiguration());
+            builder.ApplyConfiguration(new ProductImageConfiguration());
+            builder.ApplyConfiguration(new CategoryConfiguration());
+            builder.ApplyConfiguration(new StockConfiguration());
+            builder.ApplyConfiguration(new StockEventConfiguration());
+            builder.ApplyConfiguration(new OrderConfiguration());
+            builder.ApplyConfiguration(new OrderDetailConfiguration());
         }
     }
 }
