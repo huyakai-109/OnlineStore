@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+  training.api:
+    image: ${DOCKER_REGISTRY-}trainingapi
+    environment:
+      - ConnectionStrings__MyDatabase=server=host.docker.internal;user id=root;password=1092003tnhuy;database=mydb
+      - AutoMigration=true
+    build:
+      context: ../
+      dockerfile: Training.Api/Dockerfile
+    depends_on:
+      - training.mysql
+
+  training.cms:
+    image: ${DOCKER_REGISTRY-}trainingcms
+    environment:
+      - ConnectionStrings__MyDatabase=server=host.docker.internal;user id=root;password=1092003tnhuy;database=mydb
+    build:
+      context: ../
+      dockerfile: Training.Cms/Dockerfile
+    depends_on:
+      - training.mysql
+
+  training.mysql:
+    container_name: Training.MySQL
+    environment:
+      - MYSQL_ROOT_PASSWORD=1092003tnhuy
+    volumes:
+      - "./data:/var/lib/mysql"
+    image: mysql
+    ports:
+      - "3307:3306"
+
