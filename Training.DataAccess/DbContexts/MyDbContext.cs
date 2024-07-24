@@ -27,7 +27,7 @@ namespace Training.DataAccess.DbContexts
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            //builder.ApplyConfiguration(new ExampleConfiguration());
+            base.OnModelCreating(builder);
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new ProductConfiguration());
             builder.ApplyConfiguration(new ProductImageConfiguration());
