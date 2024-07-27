@@ -49,7 +49,7 @@ namespace Training.Repository.Repositories
 
         Task<IQueryable<TType>> Select<TType>(Expression<Func<T, TType>> select);
 
-        Task<IQueryable<T>> QueryAllWithIncludes(params Expression<Func<T, object>>[] includes);
+        Task<IQueryable<T>> QueryAllWithIncludes(bool disableTracking = true,params Expression<Func<T, object>>[] includes);
 
         public Task<IQueryable<T>> QueryRaw(string sql, params object[] parameters);
 
@@ -193,9 +193,9 @@ namespace Training.Repository.Repositories
         {
             return await Task.FromResult(DbSet.Select(select));
         }
-        public async Task<IQueryable<T>> QueryAllWithIncludes(params Expression<Func<T, object>>[] includes)
+        public async Task<IQueryable<T>> QueryAllWithIncludes(bool disableTracking = true, params Expression<Func<T, object>>[] includes)
         {
-            IQueryable<T> query = DbSet;
+            IQueryable<T> query = disableTracking ? DbSet.AsNoTracking() : DbSet;
 
             foreach (var include in includes)
             {
@@ -204,6 +204,7 @@ namespace Training.Repository.Repositories
 
             return await Task.FromResult(query);
         }
+
         public async Task<IQueryable<T>> QueryRaw(string sql, params object[] parameters)
         {
             return await Task.FromResult(DbSet.FromSqlRaw(sql, parameters));
