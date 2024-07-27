@@ -2,6 +2,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Training.DataAccess.DbContexts;
 
 namespace Training.Repository.Repositories
 {
@@ -28,7 +29,7 @@ namespace Training.Repository.Repositories
 
         Task Delete(IEnumerable<T> entities);
 
-        Task<T?> FindById(Guid id);
+        Task<T?> FindById(long id);
 
         Task<T?> Search(params object[] keyValues);
 
@@ -48,15 +49,19 @@ namespace Training.Repository.Repositories
 
         Task<IQueryable<TType>> Select<TType>(Expression<Func<T, TType>> select);
 
+        Task<IQueryable<T>> QueryAllWithIncludes(params Expression<Func<T, object>>[] includes);
+
         public Task<IQueryable<T>> QueryRaw(string sql, params object[] parameters);
+
+
     }
 
-    public class BaseRepository<T>(DbContext context) : IBaseRepository<T>
+    public class BaseRepository<T>(MyDbContext context) : IBaseRepository<T>
         where T : class
     {
         protected DbSet<T> DbSet { get; } = context.Set<T>();
 
-        protected DbContext DbContext { get; } = context ?? throw new ArgumentException(nameof(context));
+        protected MyDbContext DbContext { get; } = context ?? throw new ArgumentException(nameof(context));
 
         public async Task Add(T entity)
         {
@@ -125,7 +130,7 @@ namespace Training.Repository.Repositories
             await Task.CompletedTask;
         }
 
-        public async Task<T?> FindById(Guid id)
+        public async Task<T?> FindById(long id)
         {
             return await DbSet.FindAsync(id);
         }
@@ -188,7 +193,17 @@ namespace Training.Repository.Repositories
         {
             return await Task.FromResult(DbSet.Select(select));
         }
+        public async Task<IQueryable<T>> QueryAllWithIncludes(params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = DbSet;
 
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await Task.FromResult(query);
+        }
         public async Task<IQueryable<T>> QueryRaw(string sql, params object[] parameters)
         {
             return await Task.FromResult(DbSet.FromSqlRaw(sql, parameters));

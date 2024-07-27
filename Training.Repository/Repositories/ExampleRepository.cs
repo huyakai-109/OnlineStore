@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Training.DataAccess.DbContexts;
 using Training.DataAccess.Entities;
 
 namespace Training.Repository.Repositories
@@ -7,7 +8,7 @@ namespace Training.Repository.Repositories
     {
     }
 
-    public class ExampleRepository(DbContext context)
+    public class ExampleRepository(MyDbContext context)
         : BaseRepository<Example>(context), IExampleRepository
     {
     }

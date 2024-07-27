@@ -15,7 +15,8 @@ namespace Training.Repository.UoW
         IBaseRepository<TEntity> GetRepository<TEntity>()
             where TEntity : class;
 
-        IExampleRepository ExampleRepository { get; }
+      //  IExampleRepository ExampleRepository { get; }
+      //  IProductRepository ProductRepository { get; }   
     }
 
     public class UnitOfWork(
@@ -25,7 +26,8 @@ namespace Training.Repository.UoW
         private readonly MyDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
         private readonly Dictionary<Type, object> _repositories = new();
 
-        public IExampleRepository ExampleRepository => new ExampleRepository(_context);
+       // public IExampleRepository ExampleRepository => new ExampleRepository(_context);
+        //public IProductRepository ProductRepository => new ProductRepository(_context); 
 
         public IBaseRepository<TEntity> GetRepository<TEntity>()
             where TEntity : class
