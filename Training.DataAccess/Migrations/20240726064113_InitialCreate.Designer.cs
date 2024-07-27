@@ -12,8 +12,8 @@ using Training.DataAccess.DbContexts;
 namespace Training.DataAccess.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20240724032928_CreateDabatabaseSchema")]
-    partial class CreateDabatabaseSchema
+    [Migration("20240726064113_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
