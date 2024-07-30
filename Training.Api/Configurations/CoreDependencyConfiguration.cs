@@ -16,6 +16,8 @@ namespace Training.Api.Configurations
         {
             collection.AddScoped<IExampleService, ExampleService>();
             collection.AddScoped<ICustomerProductService, ProductService>();
+            collection.AddScoped<ICustomerService, CustomerService>();
+            collection.AddScoped<ITokenService, TokenService>();
         }
     }
 }
