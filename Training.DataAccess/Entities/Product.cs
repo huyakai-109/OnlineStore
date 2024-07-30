@@ -27,7 +27,8 @@ namespace Training.DataAccess.Entities
 
         public User CreatedByUser { get; set; }
         public Category Category { get; set; }
-   
+        public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
     }
 
 }

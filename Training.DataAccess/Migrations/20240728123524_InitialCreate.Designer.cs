@@ -12,7 +12,7 @@ using Training.DataAccess.DbContexts;
 namespace Training.DataAccess.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20240726064113_InitialCreate")]
+    [Migration("20240728123524_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

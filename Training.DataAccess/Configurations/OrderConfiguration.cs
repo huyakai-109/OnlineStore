@@ -15,8 +15,6 @@ namespace Training.DataAccess.Configurations
         {
             builder.HasKey(o => o.Id);
             builder.Property(o => o.Id).ValueGeneratedOnAdd();
-            builder.Property(o => o.CreatedAt).IsRequired();
-            builder.Property(o => o.IsDeleted).HasDefaultValue(false);
             builder.HasOne(o => o.Clerk)
                    .WithMany()
                    .HasForeignKey(o => o.ClerkId)
@@ -24,6 +22,10 @@ namespace Training.DataAccess.Configurations
             builder.HasOne(o => o.Customer)
                    .WithMany()
                    .HasForeignKey(o => o.CustomerId)
+                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(o => o.OrderDetails)
+                   .WithOne(od => od.Order)
+                   .HasForeignKey(od => od.OrderId)
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }

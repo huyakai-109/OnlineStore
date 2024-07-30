@@ -25,6 +25,11 @@ namespace Training.DataAccess.Configurations
             builder.Property(u => u.DateOfBirth).IsRequired();
             builder.Property(u => u.Role).IsRequired();
             builder.Property(u => u.IsDeleted).HasDefaultValue(false);
+
+            builder.HasMany(u => u.Carts)
+                   .WithOne(c => c.User)
+                   .HasForeignKey(c => c.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

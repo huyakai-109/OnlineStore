@@ -18,9 +18,9 @@ namespace Training.DataAccess.Configurations
             builder.Property(od => od.UnitPrice).IsRequired();
             builder.Property(od => od.Quantity).IsRequired();
             builder.HasOne(od => od.Order)
-                   .WithMany()
-                   .HasForeignKey(od => od.OrderId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                .WithMany(o => o.OrderDetails)
+                .HasForeignKey(od => od.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(od => od.Product)
                    .WithMany()
                    .HasForeignKey(od => od.ProductId)

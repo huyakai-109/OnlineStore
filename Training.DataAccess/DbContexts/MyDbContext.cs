@@ -24,6 +24,8 @@ namespace Training.DataAccess.DbContexts
         public DbSet<StockEvent> StockEvents { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -36,6 +38,8 @@ namespace Training.DataAccess.DbContexts
             builder.ApplyConfiguration(new StockEventConfiguration());
             builder.ApplyConfiguration(new OrderConfiguration());
             builder.ApplyConfiguration(new OrderDetailConfiguration());
+            builder.ApplyConfiguration(new CartConfiguration());
+            builder.ApplyConfiguration(new CartItemConfiguration());
         }
     }
 }

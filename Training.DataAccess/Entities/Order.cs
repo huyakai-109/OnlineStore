@@ -19,6 +19,7 @@ namespace Training.DataAccess.Entities
 
         public User Clerk { get; set; }
         public User Customer { get; set; }
+        public virtual List<OrderDetail> OrderDetails { get; set; }
 
         public long CreatedBy { get; set; }
         public long UpdatedBy { get; set; }

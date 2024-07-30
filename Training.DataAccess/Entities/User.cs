@@ -27,5 +27,7 @@ namespace Training.DataAccess.Entities
         public DateTimeOffset CreatedAt { get; set; }
         public long UpdatedBy { get; set; }
         public DateTimeOffset UpdatedAt { get; set; }
+
+        public virtual ICollection<Cart> Carts { get; set; }
     }
 }

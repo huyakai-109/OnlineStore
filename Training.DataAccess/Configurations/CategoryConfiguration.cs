@@ -19,6 +19,11 @@ namespace Training.DataAccess.Configurations
             builder.Property(c => c.Description).HasMaxLength(1000);
             builder.Property(c => c.Image).HasMaxLength(255);
             builder.Property(c => c.IsDeleted).HasDefaultValue(false);
+
+            builder.HasMany(c => c.Products)
+                   .WithOne(p => p.Category)
+                   .HasForeignKey(p => p.CategoryId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

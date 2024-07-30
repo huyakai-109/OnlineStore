@@ -8,21 +8,20 @@ using Training.DataAccess.IEntities;
 
 namespace Training.DataAccess.Entities
 {
-
-    [Table("Categories")]
-    public class Category : IIsDeletedEntity, IBaseEntity
+    [Table("CartItems")]
+    public class CartItem : IBaseEntity, IIsDeletedEntity
     {
         public long Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Image { get; set; }
-        public bool IsDeleted { get; set; }
+        public long CartId { get; set; }
+        public long ProductId { get; set; }
+        public int Quantity { get; set; }
+        public virtual Cart Cart { get; set; }
+        public virtual Product Product { get; set; }
+
         public long CreatedBy { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public long UpdatedBy { get; set; }
         public DateTimeOffset UpdatedAt { get; set; }
-
-        public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+        public bool IsDeleted { get; set; }
     }
-
 }

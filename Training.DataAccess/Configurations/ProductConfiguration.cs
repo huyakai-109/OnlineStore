@@ -9,7 +9,7 @@ using Training.DataAccess.Entities;
 
 namespace Training.DataAccess.Configurations
 {
-    internal class ProductConfiguration : IEntityTypeConfiguration<Product>
+    public class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
@@ -26,8 +26,12 @@ namespace Training.DataAccess.Configurations
                    .HasForeignKey(p => p.CreatedBy)
                    .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(p => p.Category)
-                   .WithMany()
+                   .WithMany(c => c.Products)
                    .HasForeignKey(p => p.CategoryId)
+                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(p => p.CartItems)
+                   .WithOne(ci => ci.Product)
+                   .HasForeignKey(ci => ci.ProductId)
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }
