@@ -10,6 +10,5 @@ namespace Training.BusinessLogic.Dtos.Base
     {
         public string? Category { get; set; }
         public string? Name { get; set; }
-        public bool SortByPriceAscending { get; set; } = true;
     }
 }

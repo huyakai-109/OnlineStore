@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
 using Training.Common.Helpers;
 using Training.DataAccess.DbContexts;
 using Training.DataAccess.IEntities;
@@ -14,9 +15,10 @@ namespace Training.Repository.UoW
 
         IBaseRepository<TEntity> GetRepository<TEntity>()
             where TEntity : class;
+        Task<IDbContextTransaction> BeginTransactionAsync();
 
-      //  IExampleRepository ExampleRepository { get; }
-      //  IProductRepository ProductRepository { get; }   
+        //  IExampleRepository ExampleRepository { get; }
+        //  IProductRepository ProductRepository { get; }   
     }
 
     public class UnitOfWork(
@@ -41,6 +43,10 @@ namespace Training.Repository.UoW
             }
 
             return (IBaseRepository<TEntity>)value;
+        }
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
         }
 
         public async Task<int> SaveChanges()

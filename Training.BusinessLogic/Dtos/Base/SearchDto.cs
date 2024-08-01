@@ -2,9 +2,9 @@
 {
     public class SearchDto
     {
-        public int Skip { get; set; } = 0;
+        public int Skip { get; set; }
 
-        public int Take { get; set; } = 20;
+        public int Take { get; set; }
 
         public string? SortColumn { get; set; }
 
