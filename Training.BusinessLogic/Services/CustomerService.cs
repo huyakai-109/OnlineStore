@@ -20,7 +20,7 @@ namespace Training.BusinessLogic.Services
 
         Task<bool> ChangePasswordAsync(ChangePasswordDto changePasswordDto);
 
-        Task<CustomerDto> GetProfileAsync(long userId);
+        Task<CustomerDto?> GetProfileAsync(long userId);
     }
     public class CustomerService(
         IMapper mapper,
@@ -85,7 +85,7 @@ namespace Training.BusinessLogic.Services
             return true;
         }
 
-        public async Task<CustomerDto> GetProfileAsync(long userId)
+        public async Task<CustomerDto?> GetProfileAsync(long userId)
         {
            var user = await unitOfWork.GetRepository<User>().FindById(userId);
 

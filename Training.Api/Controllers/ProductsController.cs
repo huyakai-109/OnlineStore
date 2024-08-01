@@ -1,5 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Training.Api.Models.Requests.Carts;
+using Training.Api.Models.Requests.Products;
 using Training.Api.Models.Responses.Base;
 using Training.Api.Models.Responses.Examples;
 using Training.Api.Models.Responses.Products;
@@ -44,14 +49,15 @@ namespace Training.Api.Controllers
         }
         [HttpGet]
         [ProducesResponseType(typeof(PaginationResultRes<List<ProductRes>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetProducts([FromQuery]SearchDto searchDto)
+        public async Task<IActionResult> GetProducts([FromQuery] SearchReq searchReq)
         {
             var response = new PaginationResultRes<List<ProductRes>>();
             try
             {
-                var products = await customerProductService.GetProducts(searchDto);
+
+                var products = await customerProductService.GetProducts(Mapper.Map<SearchDto>(searchReq));
                 response.Result = Mapper.Map<List<ProductRes>>(products.Items);
-                response.Pagination = new PaginationRes(products.TotalCount, products.CurrentCount, searchDto.Skip, searchDto.Take);
+                response.Pagination = new PaginationRes(products.TotalCount, products.CurrentCount, searchReq.Skip, searchReq.Take);
                 response.Success = true;
 
                 return Ok(response);
@@ -65,15 +71,15 @@ namespace Training.Api.Controllers
         }
         [HttpGet("search")]
         [ProducesResponseType(typeof(PaginationResultRes<List<ProductRes>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> SearchProducts([FromQuery] ProductSearchDto searchDto)
+        public async Task<IActionResult> SearchProducts([FromQuery] SearchReq searchReq)
 
         {
             var response = new PaginationResultRes<List<ProductRes>>();
             try
             {
-                var products = await customerProductService.SearchProducts(searchDto);
+                var products = await customerProductService.SearchProducts(Mapper.Map<ProductSearchDto>(searchReq));
                 response.Result = Mapper.Map<List<ProductRes>>(products.Items);
-                response.Pagination = new PaginationRes(products.TotalCount, products.CurrentCount, searchDto.Skip, searchDto.Take);
+                response.Pagination = new PaginationRes(products.TotalCount, products.CurrentCount, searchReq.Skip, searchReq.Take);
                 response.Success = true;
 
                 return Ok(response);
@@ -84,6 +90,52 @@ namespace Training.Api.Controllers
                 response.Success = false;
                 return InternalServerError(response);
             }
+        }
+
+        [HttpPost("add-to-cart")]
+        [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AddToCart([FromBody] AddToCartReq addToCartReq)
+        {
+            var response = new ResultRes<bool>();
+            try
+            {
+                var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub);
+                if (userIdClaim == null)
+                {
+                    response.Error = "User ID not found";
+                    return BadRequest(response);
+                }
+                var userId = long.Parse(userIdClaim.Value);
+
+                var addToCartDto = Mapper.Map<AddToCartDto>(addToCartReq);
+                addToCartDto.UserId = userId;
+                var result = await customerProductService.AddToCartAsync(addToCartDto);
+
+                if (!result)
+                {
+                    response.Error = "Failed to add product to cart";
+                    return BadRequest(response);
+                }
+
+                response.Success = true;
+                response.Result = true;
+                return Ok(response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Logger.LogError("Add products to cart failed: {ex}", ex);
+                response.Success = false;
+                response.Error = ex.Message;
+                return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Add products to cart failed: {ex}", ex);
+                response.Success = false;
+                return InternalServerError(response);
+            }
+            
         }
     }
 }
