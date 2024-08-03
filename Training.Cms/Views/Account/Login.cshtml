@@ -1,0 +1,79 @@
+﻿@model Training.Cms.Models.LoginVM
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<style>
+    .alert-danger, .alert-success {
+        max-width: 80%;
+        margin: 0 auto 20px; 
+        text-align: center; 
+        padding: 10px 15px;
+    }
+</style>
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="login-success" class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+
+    <script>
+        setTimeout(function () {
+            var successAlert = document.getElementById('login-success');
+            if (successAlert) {
+                successAlert.style.display = 'none';
+            }
+        }, 1000); 
+    </script>
+}
+@* Hiển thị thông báo lỗi nếu có *@
+@if (!ViewData.ModelState.IsValid && ViewData.ModelState.Count > 0)
+{
+    <div id="login-error" class="alert alert-danger">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+
+    <script>
+        setTimeout(function () {
+            var errorAlert = document.getElementById('login-error');
+            if (errorAlert) {
+                errorAlert.style.display = 'none';
+            }
+        }, 1000); 
+    </script>
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Welcome to Store Management Web! Please login</h2>
+                <form id="account" method="post">
+                    <div class="mb-3">
+                        <div class="form-floating">
+                            <input asp-for="Email" class="form-control" placeholder="Email address" autocomplete="username" aria-required="true">
+                            <label asp-for="Email">Email address</label>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="form-floating">
+                            <input asp-for="Password" class="form-control" placeholder="Password" autocomplete="current-password" aria-required="true">
+                            <label asp-for="Password">Password</label>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-dark">Log in</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

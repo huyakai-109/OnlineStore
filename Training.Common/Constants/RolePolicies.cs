@@ -12,5 +12,13 @@
 
             public static string[] AllowedPermissions = Permissions.All;
         }
+        public static class Clerk
+        {
+            public const long Id = 2;
+            public const string Name = "Clerk";
+            public const string DisplayName = "Clerk";
+
+            public static string[] AllowedPermissions = Permissions.Clerk;
+        }
     }
 }

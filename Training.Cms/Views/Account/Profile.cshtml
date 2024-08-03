@@ -1,0 +1,28 @@
+﻿@model Training.Cms.Models.ProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-8">
+        <dl class="row">
+            <dt class="col-sm-3">Email:</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+
+            <dt class="col-sm-3">Name:</dt>
+            <dd class="col-sm-9">@Model.FirstName @Model.LastName</dd>
+
+            <dt class="col-sm-3">Phone:</dt>
+            <dd class="col-sm-9">@Model.PhoneNumber</dd>
+
+            <dt class="col-sm-3">Date of Birth:</dt>
+            <dd class="col-sm-9">@Model.DateOfBirth.ToString("yyyy-MM-dd")</dd>
+
+            <dt class="col-sm-3">Role:</dt>
+            <dd class="col-sm-9">@Model.Role</dd>
+        </dl>
+    </div>
+</div>
