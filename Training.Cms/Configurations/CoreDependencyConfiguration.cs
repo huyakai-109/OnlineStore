@@ -17,6 +17,8 @@ namespace Training.Api.Configurations
         {
             collection.AddScoped<IUserService, UserService>();
             collection.AddScoped<ICookieService, CookieService>();
+            collection.AddScoped<IUserManagementService, UserManagementService>();
+            collection.AddScoped<ICategoryManagementService, CategoryManagementService>();
             
         }
     }

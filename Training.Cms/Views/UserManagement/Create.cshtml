@@ -1,0 +1,63 @@
+﻿@using Training.Common.EnumTypes
+@model Training.Cms.Models.UserViewModel
+
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createUserModalLabel">Create New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createUserForm" asp-controller="UserManagement" asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-floating mb-2">
+                        <input asp-for="FirstName" class="form-control" placeholder=" " required />
+                        <label asp-for="FirstName" class="form-label">First Name</label>
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input asp-for="LastName" class="form-control" placeholder=" " required />
+                        <label asp-for="LastName" class="form-label">Last Name</label>
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input asp-for="Email" class="form-control" placeholder=" " type="email" required />
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input asp-for="Password" class="form-control" placeholder=" " type="password" required />
+                        <label asp-for="Password" class="form-label">Password</label>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <select asp-for="Role" class="form-select" asp-items="Html.GetEnumSelectList<UserRole>()" required>
+                            <option value="">Select a role</option>
+                        </select>
+                        <label asp-for="Role">Role</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input asp-for="CivilianId" class="form-control" placeholder=" " />
+                        <label asp-for="CivilianId" class="form-label">Civilian ID</label>
+                        <span asp-validation-for="CivilianId" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input asp-for="DateOfBirth" class="form-control" placeholder=" " type="date" required />
+                        <label asp-for="DateOfBirth" class="form-label">Date of Birth</label>
+                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input asp-for="PhoneNumber" class="form-control" placeholder=" " />
+                        <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

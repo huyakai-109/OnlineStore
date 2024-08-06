@@ -1,0 +1,108 @@
+﻿@model Training.Cms.Models.CommonListViewModel<UserViewModel>
+@{
+    ViewData["Title"] = "User Management";
+}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-between">
+        <div class="d-flex align-items-center">
+            <h1 class="mb-0 me-5">@ViewData["Title"]</h1>
+            <button type="button" class="btn btn-success ms-2 createUserButton" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                New User
+            </button>
+            <!-- Render Partial View -->
+            @await Html.PartialAsync("Create", new UserViewModel())
+        </div>
+        <form asp-action="Index" method="get" class="d-flex align-items-center">
+            <a href="@Url.Action("ExportCsv", "UserManagement")" class="btn  btn-outline-info me-2"><i class="fa-solid fa-download"></i></a>
+            <div class="input-group">
+                <input type="text" name="SearchQuery" class="form-control border border-end-0" placeholder="Name, Email, or Role" value="@Context.Request.Query["SearchQuery"]">
+                <button type="submit" class="btn border border-start-0"> <i class="fas fa-search"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+<table class="tableUser">
+    <thead> 
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Items)
+        {
+            <tr>
+                <td>@user.FirstName</td>
+                <td> @user.LastName</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>
+                    <button class="btn btn-warning editUser" data-id="@user.Id">Edit</button>
+                    <button data-id="@user.Id" class="btn btn-danger deleteBtn" type="button">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<div id="modalContainer"></div>
+
+<form id="deleteForm" asp-action="Delete">
+    <input type="hidden" id="userId" name="Id" />
+</form>
+
+@await Html.PartialAsync("_PaginationPartial", Model.Pagination)
+
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.tableUser').DataTable(
+                {
+                    "paging": false, 
+                    "info": false ,
+                    "searching": false,
+                    "ordering": false
+                }
+            );
+            $('.createUserButton').click(function () {
+                $('#createUserModal').modal('show');
+            });
+            $('.editUser').click(function () {
+                var userId = $(this).data('id');
+                $.get('/UserManagement/Edit/' + userId, function (data) {
+                    $('#modalContainer').html(data);
+                    $('#editUserModal').modal('show');
+                });
+            });
+            $('.deleteBtn').click(function (e) {
+                Swal.fire({
+                    title: "Are you sure you want to delete this record??",
+                    icon: "warning",
+                    showCancelButton: true,  
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'No'
+                }).then((result) => {
+                    if (result.isConfirmed) { 
+                        var btn = $(this);
+                        var id = btn.data("id");
+                        $('#userId').val(id);
+                        $('#deleteForm').submit();
+                    }
+                });
+            });
+
+        });
+
+    </script>
+
+}
+
+
