@@ -38,9 +38,9 @@ namespace Training.Cms.Controllers
                 if (user != null)
                 {
                     // Redirect based on role
-                    return RedirectToAction(user.Role == UserRole.Admin ? "Index" : "ProductManagement", user.Role == UserRole.Admin ? "Home" : "Product");
+                    return RedirectToAction(user.Role == UserRole.Admin ? "Index" : "Index", user.Role == UserRole.Admin ? "Home" : "Home");
                 }
-                ModelState.AddModelError("", "Invalid email or password");
+                ModelState.AddModelError("", "Invalid email, password or access not allowed for this account.");
             }
             return View(loginVM);
         }
@@ -103,7 +103,11 @@ namespace Training.Cms.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            return View(_mapper.Map<ProfileViewModel>(userDto));
+            return View(_mapper.Map<UserViewModel>(userDto));
+        }
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
 
     }

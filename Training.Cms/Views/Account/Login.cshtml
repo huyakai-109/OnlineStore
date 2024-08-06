@@ -44,7 +44,7 @@
             if (errorAlert) {
                 errorAlert.style.display = 'none';
             }
-        }, 1000); 
+        }, 3000); 
     </script>
 }
 
@@ -54,19 +54,16 @@
             <div class="card-body">
                 <h2 class="card-title text-center mb-4">Welcome to Store Management Web! Please login</h2>
                 <form id="account" method="post">
-                    <div class="mb-3">
-                        <div class="form-floating">
+                    <div class="form-floating mb-3">
                             <input asp-for="Email" class="form-control" placeholder="Email address" autocomplete="username" aria-required="true">
                             <label asp-for="Email">Email address</label>
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
-                    </div>
-                    <div class="mb-4">
-                        <div class="form-floating">
+
+                    <div class="form-floating mb-4">
                             <input asp-for="Password" class="form-control" placeholder="Password" autocomplete="current-password" aria-required="true">
                             <label asp-for="Password">Password</label>
                             <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
                     </div>
                     <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-dark">Log in</button>
                 </form>

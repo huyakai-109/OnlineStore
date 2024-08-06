@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Training.Api.Configurations;
 using Training.BusinessLogic.Services.Admin;
+using Training.Common.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.HttpOnly = true;
 
     });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy =>
+        policy.RequireClaim("RolePolicy", RolePolicies.SysAdmin.Name));
+
+    options.AddPolicy("AdminClerk", policy =>
+          policy.RequireAssertion(context =>
+              context.User.HasClaim("RolePolicy", RolePolicies.SysAdmin.Name) ||
+              context.User.HasClaim("RolePolicy", RolePolicies.Clerk.Name)));
+});
 
 var app = builder.Build();
 

@@ -38,6 +38,11 @@ namespace Training.BusinessLogic.Services.Admin
                 return null;
             }
 
+            if (user.Role == UserRole.Customer)
+            {
+                return null;
+            }
+
             var rs = mapper.Map<UserDto>(user);
             // Sign in the user
             await cookieService.SignInAsync(rs);

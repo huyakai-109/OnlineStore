@@ -31,6 +31,7 @@ namespace Training.BusinessLogic.Services
    
         public async Task<CustomerProductDto?> GetProductByIdAsync(long id)
         {
+            // còn thiếu lấy thêm ảnh từ productImages để fill lên productDetails
             var product = await unitOfWork.GetRepository<Product>().Single(p => p.Id == id, include: p => p.Include(x => x.Category));
             if (product == null) return null;
 

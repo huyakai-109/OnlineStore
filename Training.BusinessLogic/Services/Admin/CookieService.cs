@@ -27,8 +27,7 @@ namespace Training.BusinessLogic.Services.Admin
                 new Claim(ClaimTypes.NameIdentifier, userDto.Id.ToString()),
                 new Claim(ClaimTypes.Name, userDto.FirstName +" " + userDto.LastName),
                 new Claim(ClaimTypes.Email, userDto.Email),
-                new Claim(ClaimTypes.Role, userDto.Role.ToString()),
-                new Claim(RolePolicies.ClaimType, userDto.Role == UserRole.Admin ? "Admin" : "Clerk")
+                new Claim("RolePolicy", userDto.Role == UserRole.Admin ? "Admin" : "Clerk")
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

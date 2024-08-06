@@ -12,7 +12,7 @@ namespace Training.Cms.Mapper
             CreateMap<User, UserDto>();
             CreateMap<LoginVM, UserDto>();
             CreateMap<ChangePasswordViewModel, ChangePasswordDto>();
-            CreateMap<UserDto, ProfileViewModel>();
+            CreateMap<UserDto, UserViewModel>();
         }
     }
 }
