@@ -31,7 +31,7 @@ namespace Training.Cms.Controllers
                 Items = _mapper.Map<List<UserViewModel>>(users),
                 Pagination = pagination
             };
-
+            
             return View(userList);
         }
         [HttpPost]
