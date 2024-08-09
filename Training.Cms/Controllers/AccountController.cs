@@ -38,7 +38,7 @@ namespace Training.Cms.Controllers
                 if (user != null)
                 {
                     // Redirect based on role
-                    return RedirectToAction(user.Role == UserRole.Admin ? "Index" : "Index", user.Role == UserRole.Admin ? "Home" : "Home");
+                    return RedirectToAction(user.Role == UserRole.Admin ? "Index" : "Index", user.Role == UserRole.Admin ? "UserManagement" : "ProductManagement");
                 }
                 ModelState.AddModelError("", "Invalid email, password or access not allowed for this account.");
             }

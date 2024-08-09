@@ -1,9 +1,9 @@
-﻿@model Training.Cms.Models.ErrorViewModel
+﻿@* @model Training.Cms.Models.ErrorViewModel
 @{
     ViewData["Title"] = "Error";
-}
+} *@
 
-<h1 class="text-danger">Error.</h1>
+@* <h1 class="text-danger">Error.</h1>
 <h2 class="text-danger">An error occurred while processing your request.</h2>
 
 @if (Model.ShowRequestId)
@@ -23,3 +23,20 @@
     For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
     and restarting the app.
 </p>
+ *@
+@{
+    Layout = null;
+    string controllerName = ViewData["ControllerName"] as string ?? "Home"; 
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="3;url=@Url.Action("Index", controllerName)">
+    <title>Error</title>
+</head>
+<body>
+    <h1>Error Occurred</h1>
+    <p>@ViewData["ErrorMessage"]</p>
+</body>
+</html>

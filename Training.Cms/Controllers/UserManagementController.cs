@@ -88,8 +88,8 @@ namespace Training.Cms.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-
-                    ModelState.AddModelError(string.Empty, "Unable to save changes. The user was updated by another user.");
+                    var errorMessage = "Unable to save changes. The user was updated by another user.";
+                    return RedirectToAction("Error", new { message = errorMessage, controllerName = "UserManagement" });
                 }
 
             }
@@ -110,6 +110,13 @@ namespace Training.Cms.Controllers
             var users = await _userManagementService.GetAllUsers();  
             var csvFile = _userManagementService.ExportUsersToCsv(users);
             return File(csvFile, "text/csv", "Users.csv");
+        }
+
+        public IActionResult Error(string message, string controllerName)
+        {
+            ViewData["ErrorMessage"] = message;
+            ViewData["ControllerName"] = controllerName;
+            return View();
         }
     }
 }

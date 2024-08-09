@@ -39,7 +39,8 @@ namespace Training.Cms.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("Index", categoryViewModel);
+                var errorMessage = "Invalid data provided. Please check and try again.";
+                return RedirectToAction("Error", new { message = errorMessage, controllerName = "CategoryManagement" });
             }
             var categoryDto = _mapper.Map<CategoryDto>(categoryViewModel);
             await _categoryManagementService.CreateCategory(categoryDto);
@@ -78,7 +79,8 @@ namespace Training.Cms.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
 
-                    ModelState.AddModelError(string.Empty, "Unable to save changes. The user was updated by another user.");
+                    var errorMessage = "Unable to save changes. The user was updated by another user.";
+                    return RedirectToAction("Error", new { message = errorMessage, controllerName = "CategoryManagement" });
                 }
 
             }
@@ -90,6 +92,13 @@ namespace Training.Cms.Controllers
         {
             await _categoryManagementService.DeleteCategory(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Error(string message, string controllerName)
+        {
+            ViewData["ErrorMessage"] = message;
+            ViewData["ControllerName"] = controllerName;
+            return View();
         }
     }
 }
