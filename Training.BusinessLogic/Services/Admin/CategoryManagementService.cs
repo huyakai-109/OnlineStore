@@ -39,7 +39,10 @@ namespace Training.BusinessLogic.Services.Admin
         {
             var categoryRepo = unitOfWork.GetRepository<Category>();
             var category = await categoryRepo.Single(u => u.Id == Id);
-
+            if (category == null)
+            {
+                throw new KeyNotFoundException($"Product with Id {Id} not found.");
+            }
             category.IsDeleted = true;
 
             await categoryRepo.Update(category);

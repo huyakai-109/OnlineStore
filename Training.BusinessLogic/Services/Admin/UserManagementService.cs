@@ -50,6 +50,10 @@ namespace Training.BusinessLogic.Services.Admin
             var userRepo = unitOfWork.GetRepository<User>();
             var user = await userRepo.Single(u => u.Id == Id);
 
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"Product with Id {Id} not found.");
+            }
             user.IsDeleted = true;
 
             await userRepo.Update(user);

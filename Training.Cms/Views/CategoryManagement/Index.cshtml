@@ -36,7 +36,9 @@
             <tr>
                 <td>@category.Name</td>
                 <td> @category.Description</td>
-                <td>@category.Image</td>
+                <td>
+                    <img src="@category.Image" alt="Image" class="img-Image" style="max-width: 53px; max-height:34px" />
+                </td>
                 <td>
                     <button class="btn btn-warning editCategory" data-id="@category.Id">Edit</button>
                     <button data-id="@category.Id" class="btn btn-danger deleteBtn" type="button">Delete</button>
