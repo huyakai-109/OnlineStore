@@ -4,14 +4,14 @@ using Training.DataAccess.Entities;
 
 namespace Training.Cms.Helpers
 {
-    public class ProductUrlResolver : IValueResolver<Product, ProductDto, string>
+    public class ProductUrlResolver : IValueResolver<Product, ProductDto, string?>
     {
         private readonly IConfiguration _config;
         public ProductUrlResolver(IConfiguration config)
         {
             _config = config;
         }
-        public string Resolve(Product source, ProductDto destination, string destMember, ResolutionContext context)
+        public string Resolve(Product source, ProductDto destination, string? destMember, ResolutionContext context)
         {
             if (!string.IsNullOrEmpty(source.Thumbnail))
             {

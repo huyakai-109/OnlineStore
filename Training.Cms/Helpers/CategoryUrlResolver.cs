@@ -4,7 +4,7 @@ using Training.DataAccess.Entities;
 
 namespace Training.Cms.Helpers
 {
-    public class CategoryUrlResolver : IValueResolver<Category, CategoryDto, string>
+    public class CategoryUrlResolver : IValueResolver<Category, CategoryDto, string?>
     {
 
         private readonly IConfiguration _config;
@@ -12,7 +12,7 @@ namespace Training.Cms.Helpers
         {
             _config = config;
         }
-        public string Resolve(Category source, CategoryDto destination, string destMember, ResolutionContext context)
+        public string Resolve(Category source, CategoryDto destination, string? destMember, ResolutionContext context)
         {
             if (!string.IsNullOrEmpty(source.Image))
             {
