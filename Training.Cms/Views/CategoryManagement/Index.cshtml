@@ -2,15 +2,16 @@
 @{
     ViewData["Title"] = "Category Management";
 }
+
 <div class="container mt-4 mb-3">
-    <div class="d-flex justify-content-between align-items-between">
+    <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
             <h1 class="mb-0 me-5">@ViewData["Title"]</h1>
             <button type="button" class="btn btn-success ms-2 createCategoryButton" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
                 New Category
             </button>
             <!-- Render Partial View -->
-             @await Html.PartialAsync("Create", new CategoryViewModel())
+            @await Html.PartialAsync("Create", new CategoryViewModel())
         </div>
         <form asp-action="Index" method="get" class="d-flex align-items-center">
             <div class="input-group">
@@ -35,9 +36,9 @@
         {
             <tr>
                 <td>@category.Name</td>
-                <td> @category.Description</td>
+                <td>@category.Description</td>
                 <td>
-                    <img src="@category.Image" alt="Image" class="img-Image" style="max-width: 53px; max-height:34px" />
+                    <img src="@category.ImagePath" alt="Image" class="img-fluid" style="max-width: 53px; max-height:34px" />
                 </td>
                 <td>
                     <button class="btn btn-warning editCategory" data-id="@category.Id">Edit</button>
@@ -52,7 +53,6 @@
 <form id="deleteForm" asp-action="Delete">
     <input type="hidden" id="CategoryId" name="Id" />
 </form>
-
 
 @await Html.PartialAsync("_PaginationPartial", Model.Pagination)
 @section Scripts {
@@ -78,7 +78,7 @@
             });
             $('.deleteBtn').click(function (e) {
                 Swal.fire({
-                    title: "Are you sure you want to delete this record??",
+                    title: "Are you sure you want to delete this record?",
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -96,5 +96,4 @@
             });
         });
     </script>
-
 }

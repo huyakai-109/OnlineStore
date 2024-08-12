@@ -8,7 +8,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="createCategoryForm" asp-controller="CategoryManagement" asp-action="Create" method="post">
+                <form id="createCategoryForm" asp-controller="CategoryManagement" asp-action="Create" method="post" enctype="multipart/form-data">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-floating mb-2">
                         <input asp-for="Name" class="form-control" placeholder=" " required />

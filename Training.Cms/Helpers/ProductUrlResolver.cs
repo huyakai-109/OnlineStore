@@ -16,7 +16,7 @@ namespace Training.Cms.Helpers
             if (!string.IsNullOrEmpty(source.Thumbnail))
             {
                 var apiUrl = _config["ApiUrl"] ?? string.Empty;
-                return $"{apiUrl}images/products/{source.Thumbnail}";
+                return $"{apiUrl}/{source.Thumbnail}";
             }
             return string.Empty;
         }

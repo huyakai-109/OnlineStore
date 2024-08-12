@@ -12,8 +12,10 @@ namespace Training.Cms.Mapper
         public CategoryManagementMapper() 
         {
             CreateMap<Category, CategoryDto>()
-                .ForMember(cd=> cd.Image, o => o.MapFrom<CategoryUrlResolver>());
-            CreateMap<CategoryDto, Category>();
+                .ForMember(cd => cd.ImagePath, o => o.MapFrom<CategoryUrlResolver>());
+            CreateMap<CategoryDto, Category>()
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.ImagePath));
+
             CreateMap<CategoryDto, CategoryViewModel>().ReverseMap();
             CreateMap<CommonSearchViewModel, CommonSearchDto>();
         }

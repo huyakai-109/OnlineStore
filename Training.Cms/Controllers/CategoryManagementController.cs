@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Training.BusinessLogic.Dtos.Admin;
@@ -15,11 +16,13 @@ namespace Training.Cms.Controllers
         private readonly ICategoryManagementService _categoryManagementService;
         private readonly IMapper _mapper;
         private readonly ILogger<CategoryManagementController> _logger;
-        public CategoryManagementController(ICategoryManagementService categoryManagementService, IMapper mapper, ILogger<CategoryManagementController> logger)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public CategoryManagementController(ICategoryManagementService categoryManagementService, IMapper mapper, ILogger<CategoryManagementController> logger, IWebHostEnvironment webHostEnvironment)
         {
             _categoryManagementService = categoryManagementService;
             _mapper = mapper;
             _logger = logger;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<IActionResult> Index([FromQuery] CommonSearchViewModel search)
@@ -33,7 +36,6 @@ namespace Training.Cms.Controllers
 
             return View(categoryList);
         }
-
         [HttpPost]
         public async Task<IActionResult> Create(CategoryViewModel categoryViewModel)
         {
@@ -42,11 +44,36 @@ namespace Training.Cms.Controllers
                 var errorMessage = "Invalid data provided. Please check and try again.";
                 return RedirectToAction("Error", new { message = errorMessage, controllerName = "CategoryManagement" });
             }
+
+            // Handle file upload
+            if (categoryViewModel.Image != null && categoryViewModel.Image.Length > 0)
+            {
+                // Ensure directory exists
+                var uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "images/categories");
+                if (!Directory.Exists(uploadPath))
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
+
+                // Save the file
+                var fileName = Path.GetFileName(categoryViewModel.Image.FileName);
+                var filePath = Path.Combine(uploadPath, fileName);  
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await categoryViewModel.Image.CopyToAsync(stream);
+                }
+
+                // Set the image path for database storage
+                categoryViewModel.ImagePath = $"images/categories/{fileName}".Replace("\\", "/");
+            }
+
             var categoryDto = _mapper.Map<CategoryDto>(categoryViewModel);
             await _categoryManagementService.CreateCategory(categoryDto);
 
             return RedirectToAction("Index");
         }
+
         [HttpGet]
         public async Task<IActionResult> Edit(long id)
         {
@@ -71,6 +98,19 @@ namespace Training.Cms.Controllers
             {
                 try
                 {
+                    if (model.Image != null && model.Image.Length > 0)
+                    {
+                        var fileName = Path.GetFileName(model.Image.FileName);
+                        var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images/categories", fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await model.Image.CopyToAsync(stream);
+                        }
+
+                        model.ImagePath = $"images/categories/{fileName}".Replace("\\", "/");
+                    }
+
                     var category = _mapper.Map<CategoryDto>(model);
                     var result = await _categoryManagementService.UpdateCategory(category);
 
@@ -78,15 +118,14 @@ namespace Training.Cms.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-
-                    var errorMessage = "Unable to save changes. The user was updated by another user.";
+                    var errorMessage = "Unable to save changes. The category was updated by another user.";
                     return RedirectToAction("Error", new { message = errorMessage, controllerName = "CategoryManagement" });
                 }
-
             }
 
             return View(model);
         }
+
         [HttpPost]
         public async Task<IActionResult> Delete(long id)
         {

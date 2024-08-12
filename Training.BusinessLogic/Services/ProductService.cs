@@ -40,7 +40,7 @@ namespace Training.BusinessLogic.Services
 
         public async Task<(List<CustomerProductDto> Items, int TotalCount, int CurrentCount)> GetProducts(SearchDto searchDto)
         {
-            var query = await unitOfWork.GetRepository<Product>().QueryAllWithIncludes(disableTracking: true,p => p.Category);
+            var query = await unitOfWork.GetRepository<Product>().QueryAllWithIncludes(p => !p.IsDeleted,disableTracking: true,p => p.Category);
             var totalCount = await query.CountAsync();
             var products = await query.Skip(searchDto.Skip).Take(searchDto.Take).ToListAsync();
             var currentCount = products.Count;
@@ -50,7 +50,7 @@ namespace Training.BusinessLogic.Services
 
         public async Task<(List<CustomerProductDto> Items, int TotalCount, int CurrentCount)> SearchProducts(ProductSearchDto searchDto)
         {
-            var query = await unitOfWork.GetRepository<Product>().QueryAllWithIncludes(disableTracking: true,p => p.Category);
+            var query = await unitOfWork.GetRepository<Product>().QueryAllWithIncludes(p => !p.IsDeleted, disableTracking: true, p => p.Category);
 
             if (!string.IsNullOrEmpty(searchDto.Category))
             {

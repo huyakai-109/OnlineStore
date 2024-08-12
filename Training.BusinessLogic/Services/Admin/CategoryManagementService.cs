@@ -87,9 +87,9 @@ namespace Training.BusinessLogic.Services.Admin
             category.Name = categoryDto.Name;
             category.Description = categoryDto.Description;
 
-            if (!string.IsNullOrEmpty(categoryDto.Image))
+            if (!string.IsNullOrEmpty(categoryDto.ImagePath))
             {
-                category.Image = categoryDto.Image;
+                category.Image = categoryDto.ImagePath;
             }
             await categoryRepo.Update(category);
             await unitOfWork.SaveChanges();
