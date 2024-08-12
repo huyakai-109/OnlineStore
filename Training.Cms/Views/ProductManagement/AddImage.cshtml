@@ -1,0 +1,39 @@
+﻿@model Training.Cms.Models.ProductImageViewModel
+
+<div class="modal fade" id="addImageModal" tabindex="-1" aria-labelledby="addImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addImageModalLabel">Add Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addImageForm" asp-controller="ProductManagement" asp-action="AddImage" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="ProductId" />
+                    <div class="input-group mb-3">
+                        <span class="input-group-text bg-light" id="Image">Image</span>
+                        <input type="file" asp-for="Image" class="form-control" aria-describedby="Image" required>
+                        <span asp-validation-for="Image" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-2">
+                        <input asp-for="Order" class="form-control" placeholder=" " type="number" value="1" />
+                        <label asp-for="Order" class="form-label">Order</label>
+                        <span asp-validation-for="Order" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="IsThumbnail" />
+                        <label class="form-check-label" asp-for="IsThumbnail">
+                            Set as Thumbnail
+                        </label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-info">Upload Image</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

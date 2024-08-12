@@ -66,9 +66,6 @@
                     "ordering": false
                 }
             );
-            $('.createCategoryButton').click(function () {
-                $('#createCategoryModal').modal('show');
-            });
             $('.editCategory').click(function () {
                 var categoryId = $(this).data('id');
                 $.get('/CategoryManagement/Edit/' + categoryId, function (data) {
