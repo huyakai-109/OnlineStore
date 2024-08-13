@@ -16,11 +16,6 @@ namespace Training.Cms.Mapper
             CreateMap<StockDto, Stock>();
             CreateMap<StockDto, StockViewModel>();
 
-            CreateMap<StockEvent, StockEventDto>();
-            CreateMap<StockEventDto, StockEvent>();
-            CreateMap<StockEventDto, StockEventViewModel>();
-            CreateMap<StockEventViewModel, StockEventDto>();
-
             CreateMap<CommonSearchViewModel, CommonSearchDto>();
         }
     }

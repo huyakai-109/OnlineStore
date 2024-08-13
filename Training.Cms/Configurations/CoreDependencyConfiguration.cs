@@ -21,6 +21,7 @@ namespace Training.Api.Configurations
             collection.AddScoped<ICategoryManagementService, CategoryManagementService>();
             collection.AddScoped<IProductManagementService, ProductManagementService>();
             collection.AddScoped<IStockManagementService, StockManagementService>();
+            collection.AddScoped<IStockEventManagementService, StockEventManagementService>();
             
         }
     }

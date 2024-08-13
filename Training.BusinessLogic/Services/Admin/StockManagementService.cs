@@ -25,7 +25,7 @@ namespace Training.BusinessLogic.Services.Admin
 
         public async Task<(List<StockDto> Stocks, Pagination pagination)> GetStocks(CommonSearchDto search)
         {
-            var query = await unitOfWork.GetRepository<Stock>().QueryAllWithIncludes(s => !s.Product.Category.IsDeleted && !s.Product.IsDeleted ,disableTracking: true, s => s.Product, s => s.Product.Category);
+            var query = await unitOfWork.GetRepository<Stock>().QueryAllWithIncludes(s => !s.Product.IsDeleted ,disableTracking: true, s => s.Product, s => s.Product.Category);
 
             if (!string.IsNullOrEmpty(search.SearchQuery))
             {

@@ -15,5 +15,8 @@ namespace Training.BusinessLogic.Dtos.Admin
         public string? Reason { get; set; }
         public int Quantity { get; set; }
 
+        public string? Product { get; set; }
+        public string? Category { get; set; }
+
     }
 }

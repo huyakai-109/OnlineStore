@@ -8,5 +8,7 @@ namespace Training.Cms.Models
         public StockEventType Type { get; set; }
         public string? Reason { get; set; }
         public int Quantity { get; set; }
+        public string? Product { get; set; }
+        public string? Category { get; set; }
     }
 }
