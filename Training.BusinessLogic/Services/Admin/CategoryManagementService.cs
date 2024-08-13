@@ -44,6 +44,15 @@ namespace Training.BusinessLogic.Services.Admin
                 throw new KeyNotFoundException($"Product with Id {Id} not found.");
             }
             category.IsDeleted = true;
+            // delete products corresponding with category
+            var productRepo =  unitOfWork.GetRepository<Product>();
+            var products = await productRepo.QueryCondition(p => p.CategoryId == Id);
+            var listProduct = await products.ToListAsync();
+            foreach (var item in listProduct)
+            {
+                item.IsDeleted = true; 
+                await productRepo.Update(item);
+            }
 
             await categoryRepo.Update(category);
             await unitOfWork.SaveChanges();
