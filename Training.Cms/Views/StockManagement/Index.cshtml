@@ -33,8 +33,7 @@
                 <td>@stock.Category</td>
                 <td class="text-center"> @stock.Quantity</td>
                 <td>
-                    <a class="btn btn-info" asp-action="Edit" asp-route-id="@stock.Id">Increase</a>
-                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@stock.Id">Decrease</a>
+                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@stock.Id">Adjust Quantity</a>
                 </td>
             </tr>
         }
