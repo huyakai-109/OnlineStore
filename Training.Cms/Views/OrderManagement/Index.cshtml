@@ -1,0 +1,53 @@
+﻿@model Training.Cms.Models.CommonListViewModel<OrderViewModel>
+@{
+    ViewData["Title"] = "Order Management";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-between">
+        <h1 class="mb-0 me-5">@ViewData["Title"]</h1>
+        <form asp-action="Index" method="get" class="d-flex align-items-center">
+            <div class="input-group">
+                <input type="text" name="SearchQuery" class="form-control border border-end-0" placeholder="Name" value="@Context.Request.Query["SearchQuery"]">
+                <button type="submit" class="btn border border-start-0"> <i class="fas fa-search"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Customer Name</th>
+            <th>Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model.Items)
+        {
+            <tr>
+                <td>@order.CustomerName</td>
+                <td>@order.CreatedAt.DateTime</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@await Html.PartialAsync("_PaginationPartial", Model.Pagination)
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.table').DataTable(
+                {
+                    "paging": false,
+                    "info": false,
+                    "searching": false,
+                    "ordering": false
+                }
+            );
+        });
+
+    </script>
+
+}
