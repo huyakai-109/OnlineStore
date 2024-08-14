@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "Report";
+}
+
+<style>
+    .title {
+        font-size:2.5rem;
+    }
+
+    .dt-container div.dt-layout-row {
+        margin: 0.2rem !important;
+     }
+    #reportTab .nav-link {
+        color: black;
+        font-weight: 500;
+    }
+
+    .nav-link:focus, .nav-link.active {
+        color: deepskyblue !important; 
+    }
+</style>
+
+<h2 class="title my-3">@ViewData["Title"]</h2>
+
+<ul class="nav nav-tabs" id="reportTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="low-stock-tab" data-bs-toggle="tab" data-bs-target="#low-stock" type="button" role="tab" aria-controls="low-stock" aria-selected="true">Low-Stock Products</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="todays-orders-tab" data-bs-toggle="tab" data-bs-target="#todays-orders" type="button" role="tab" aria-controls="todays-orders" aria-selected="false">Today's Orders</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="highest-orders-tab" data-bs-toggle="tab" data-bs-target="#highest-orders" type="button" role="tab" aria-controls="highest-orders" aria-selected="false">Highest Total Orders</button>
+    </li>
+</ul>
+
+
+<div class="tab-content" id="reportTabContent">
+    <div class="tab-pane fade show active" id="low-stock" role="tabpanel" aria-labelledby="low-stock-tab">
+        @await Html.PartialAsync("_LowStockProducts", Model as Training.Cms.Models.CommonListViewModel<StockViewModel>)
+    </div>
+    <div class="tab-pane fade" id="todays-orders" role="tabpanel" aria-labelledby="todays-orders-tab">
+    </div>
+    <div class="tab-pane fade" id="highest-orders" role="tabpanel" aria-labelledby="highest-orders-tab">
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.table').DataTable(
+                {
+                    "paging": false,
+                    "info": false,
+                    "searching": false,
+                    "ordering": false
+                }
+            );
+            $('#todays-orders-tab').on('shown.bs.tab', function () {
+                $.ajax({
+                    url: '@Url.Action("TodayOrders", "Report")',
+                    type: 'GET',
+                    success: function (result) {
+                        $('#todays-orders').html(result);
+                        // Khởi tạo lại DataTable sau khi nhận được dữ liệu mới
+                        $('#todays-orders .table').DataTable({
+                            "paging": false,
+                            "info": false,
+                            "searching": false,
+                            "ordering": false
+                        });
+                    },
+                    error: function () {
+                        alert('Error loading Today\'s Orders');
+                    }
+                });
+            });
+            $('#highest-orders-tab').on('shown.bs.tab', function () {
+                $.ajax({
+                    url: '@Url.Action("HighestOrders", "Report")',
+                    type: 'GET',
+                    success: function (result) {
+                        $('#highest-orders').html(result);
+                        $('#highest-orders .table').DataTable({
+                            "paging": false,
+                            "info": false,
+                            "searching": false,
+                            "ordering": false
+                        });
+                    },
+                    error: function () {
+                        alert('Error loading Today\'s Orders');
+                    }
+                });
+            });
+        });
+
+    </script>
+
+}

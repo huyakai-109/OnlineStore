@@ -8,7 +8,10 @@ namespace Training.BusinessLogic.Dtos.Admin
 {
     public class OrderDto
     {
+        public long Id { get; set; }
         public string? CustomerName { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
+
+        public float TotalPrice { get; set; }   
     }
 }

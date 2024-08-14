@@ -1,0 +1,29 @@
+﻿@model Training.Cms.Models.CommonListViewModel<StockViewModel>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th class="text-center">Quantity</th>
+        </tr>
+    </thead>
+    <tbody>
+          @if (Model != null && Model.Items != null && Model.Items.Any())
+        {
+            foreach (var stock in Model.Items)
+            {
+                <tr>
+                    <td>@stock.Product</td>
+                    <td class="text-center">@stock.Quantity</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="2">No data available</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+ @await Html.PartialAsync("_PaginationPartial", Model?.Pagination) 

@@ -27,7 +27,7 @@
         {
             <tr>
                 <td>@order.CustomerName</td>
-                <td>@order.CreatedAt.DateTime</td>
+                <td>@order.CreatedAt.ToOffset(TimeSpan.FromHours(7)).DateTime</td>
             </tr>
         }
     </tbody>

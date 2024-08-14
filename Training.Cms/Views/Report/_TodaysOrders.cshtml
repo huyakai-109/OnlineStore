@@ -1,0 +1,30 @@
+﻿@model Training.Cms.Models.CommonListViewModel<OrderViewModel>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Customer Name</th>
+            <th>Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Items != null && Model.Items.Any())
+        {
+            foreach (var order in Model.Items)
+            {
+                <tr>
+                    <td>@order.CustomerName</td>
+                    <td>@order.CreatedAt.ToOffset(TimeSpan.FromHours(7)).DateTime</td>
+                    </tr>
+                }
+            }
+        else
+        {
+            <tr>
+                <td colspan="2">No data available</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@await Html.PartialAsync("_PaginationPartial", Model?.Pagination) 

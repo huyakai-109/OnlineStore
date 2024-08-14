@@ -41,7 +41,7 @@ namespace Training.BusinessLogic.Services
                 var order = new Order
                 {
                     CustomerId = purchaseCartDto.UserId,
-                    CreatedAt = DateTimeOffset.UtcNow,
+                    CreatedAt = DateTimeOffset.Now,
                     OrderDetails = new List<OrderDetail>()
                 };
                 await orderRepo.Add(order);
