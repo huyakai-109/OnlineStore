@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Training.BusinessLogic.Dtos.Admin;
 using Training.Common.Constants;
 using Training.Common.EnumTypes;
+using Microsoft.Extensions.Logging;
 
 namespace Training.BusinessLogic.Services.Admin
 {
@@ -18,32 +19,50 @@ namespace Training.BusinessLogic.Services.Admin
         Task SignInAsync(UserDto userDto);
         Task SignOutAsync();
     }
-    public class CookieService(IHttpContextAccessor _httpContextAccessor) : ICookieService
+    public class CookieService(IHttpContextAccessor _httpContextAccessor, ILogger<CookieService> logger) : ICookieService
     {
+        private HttpContext GetHttpContext()
+        {
+            var context = _httpContextAccessor.HttpContext;
+            if (context == null)
+            {
+                throw new InvalidOperationException("HttpContext is not available.");
+            }
+            return context;
+        }
         public async Task SignInAsync(UserDto userDto)
         {
-            var claims = new List<Claim>
+            try
             {
-                new Claim(ClaimTypes.NameIdentifier, userDto.Id.ToString()),
-                new Claim(ClaimTypes.Name, userDto.FirstName +" " + userDto.LastName),
-                new Claim(ClaimTypes.Email, userDto.Email),
-                new Claim("RolePolicy", userDto.Role == UserRole.Admin ? "Admin" : "Clerk")
-            };
+                var context = GetHttpContext();
 
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var authProperties = new AuthenticationProperties
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userDto.Id.ToString()),
+                    new Claim(ClaimTypes.Name, $"{userDto.FirstName} {userDto.LastName}"),
+                    new Claim(ClaimTypes.Email, userDto.Email ?? string.Empty),
+                    new Claim(RolePolicies.ClaimType, userDto.Role.ToString())
+                };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties
+                {
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60)
+                };
+
+                await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+            }
+            catch (InvalidOperationException ex)
             {
-                // not required  IsPersistent = isPersistent,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60)
-            };
-
-            await _httpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                                                                new ClaimsPrincipal(claimsIdentity), authProperties);
+                logger.LogError(ex, " ");
+                throw;
+            }
         }
 
         public async Task SignOutAsync()
         {
-            await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var context = GetHttpContext();
+            await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
     }
 }
