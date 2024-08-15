@@ -7,7 +7,7 @@ using Training.Cms.Models;
 
 namespace Training.Cms.Controllers
 {
-    [Authorize("AdminClerk")]
+    [Authorize(Policy = "AdminOrClerk")]
     public class OrderManagementController : Controller
     {
         private readonly IOrderManagementService _orderManagementService;

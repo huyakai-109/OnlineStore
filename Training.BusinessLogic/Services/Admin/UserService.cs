@@ -32,6 +32,10 @@ namespace Training.BusinessLogic.Services.Admin
         {
             var userRepo = unitOfWork.GetRepository<User>();
             var user = await userRepo.Single(u => u.Email == userDto.Email && !u.IsDeleted);
+            if (string.IsNullOrEmpty(userDto.Password))
+            {
+                return null;
+            }
 
             if (user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(userDto.Password), user.Password))
             {
@@ -55,6 +59,11 @@ namespace Training.BusinessLogic.Services.Admin
         {
             var userRepo = unitOfWork.GetRepository<User>();    
             var user = await userRepo.Single(u => u.Id == changePasswordDto.Id);
+
+            if (string.IsNullOrEmpty(changePasswordDto.OldPassword) || string.IsNullOrEmpty(changePasswordDto.NewPassword))
+            {
+                return false;   
+            }
 
             if(user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(changePasswordDto.OldPassword), user.Password))
                 return false;  

@@ -14,26 +14,6 @@ builder.Services.AddCoreDependencies(config);
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Account/Login";
-        options.AccessDeniedPath = "/Account/AccessDenied";
-        options.Cookie.HttpOnly = true;
-
-    });
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminPolicy", policy =>
-        policy.RequireClaim("RolePolicy", RolePolicies.SysAdmin.Name));
-
-    options.AddPolicy("AdminClerk", policy =>
-          policy.RequireAssertion(context =>
-              context.User.HasClaim("RolePolicy", RolePolicies.SysAdmin.Name) ||
-              context.User.HasClaim("RolePolicy", RolePolicies.Clerk.Name)));
-});
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

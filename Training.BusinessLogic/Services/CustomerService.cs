@@ -16,7 +16,7 @@ namespace Training.BusinessLogic.Services
     public interface ICustomerService
     {
         Task<bool> RegisterCustomer(CustomerDto customerDto);
-        Task<(bool IsSuccess, string token, CustomerDto customerDto)> LoginAsync(CustomerDto customerDto);
+        Task<(string token, CustomerDto customerDto)> LoginAsync(CustomerDto customerDto);
 
         Task<bool> ChangePasswordAsync(ChangePasswordDto changePasswordDto);
 
@@ -29,57 +29,78 @@ namespace Training.BusinessLogic.Services
     {
         public async Task<bool> RegisterCustomer(CustomerDto customerDto)
         {
-            var customer = unitOfWork.GetRepository<User>();
-
-            // Check if email already exists
-            if (await customer.Any(c => c.Email == customerDto.Email))
+           
+            if (customerDto.Password == null)
             {
-                return false;
+                throw new ArgumentNullException(nameof(customerDto.Password), "Password cannot be null.");
+            }
+
+            var customerRepo = unitOfWork.GetRepository<User>();
+
+            // Check if the email already exists
+            if (await customerRepo.Any(c => c.Email == customerDto.Email))
+            {
+                return false; 
             }
 
             var user = mapper.Map<User>(customerDto);
-
             user.Password = CommonHelper.ComputeHash(customerDto.Password);
-            user.Role = UserRole.Customer; 
+            user.Role = UserRole.Customer;
             user.IsDeleted = false;
 
-
-            await customer.Add(user);
+            
+            await customerRepo.Add(user);
             await unitOfWork.SaveChanges();
 
-            return true;
+            return true; 
         }
-        public async Task<(bool IsSuccess, string token, CustomerDto customerDto)> LoginAsync(CustomerDto customerDto)
+
+        public async Task<(string token, CustomerDto customerDto)> LoginAsync(CustomerDto customerDto)
         {
-            var customerRepo = unitOfWork.GetRepository<User>();
-
-            var user = await customerRepo.Single(c => c.Email == customerDto.Email);
-
-
-            if (user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(customerDto.Password), user.Password))
+            if (customerDto.Password == null)
             {
-                return (false, null, null);
+                throw new InvalidOperationException("Password cannot be null.");
             }
 
-            var userDto = mapper.Map<CustomerDto>(user);
-            var token = tokenService.GenerateToken(userDto);
+            try
+            {
+                var customerRepo = unitOfWork.GetRepository<User>();
 
-            return (true, token, userDto);
+                var user = await customerRepo.Single(c => c.Email == customerDto.Email);
+
+                if (user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(customerDto.Password), user.Password))
+                {
+                    throw new InvalidOperationException("Invalid email or password.");
+                }
+
+                var userDto = mapper.Map<CustomerDto>(user);
+                var token = tokenService.GenerateToken(userDto);
+
+                return (token, userDto);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("An error occurred during login.", ex);
+            }
         }
+
 
         public async Task<bool> ChangePasswordAsync(ChangePasswordDto changePasswordDto)
         {
             var userRepo = unitOfWork.GetRepository<User>();
             var user = await userRepo.Single(u => u.Id == changePasswordDto.Id);
 
-            if (user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(changePasswordDto.OldPassword), user.Password))
+            if (!string.IsNullOrEmpty(changePasswordDto.OldPassword) && !string.IsNullOrEmpty(changePasswordDto.NewPassword))
             {
-                return false;
+                if (user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(changePasswordDto.OldPassword), user.Password))
+                {
+                    return false;
+                }
+
+                user.Password = CommonHelper.ComputeHash(changePasswordDto.NewPassword);
+
+                await userRepo.Update(user);
             }
-
-            user.Password = CommonHelper.ComputeHash(changePasswordDto.NewPassword);
-
-            await userRepo.Update(user);
             await unitOfWork.SaveChanges();
 
             return true;

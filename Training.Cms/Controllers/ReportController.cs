@@ -8,7 +8,7 @@ using Training.DataAccess.Entities;
 
 namespace Training.Cms.Controllers
 {
-    [Authorize("AdminClerk")]
+    [Authorize(Policy = "AdminOrClerk")]
     public class ReportController : Controller
     {
         private readonly IReportService _reportService;

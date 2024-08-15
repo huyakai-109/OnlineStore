@@ -12,7 +12,8 @@
 
             var remain = totalCount % ItemsPerPage != 0 ? 1 : 0;
             TotalPages = totalCount / ItemsPerPage + remain;
-            CurrentPage = (skip ?? 0) / ItemsPerPage + 1;
+            //CurrentPage = (skip ?? 0) / ItemsPerPage + 1;
+            CurrentPage = skip ?? 1;
         }
 
         public int TotalCount { get; set; }

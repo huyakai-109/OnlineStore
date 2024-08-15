@@ -23,17 +23,26 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var order in Model.Items)
+        @if (Model != null && Model.Items != null && Model.Items.Any())
+        {
+            @foreach (var order in Model.Items)
+            {
+                <tr>
+                    <td>@order.CustomerName</td>
+                    <td>@order.CreatedAt.ToOffset(TimeSpan.FromHours(7)).DateTime</td>
+                </tr>
+            }
+        }
+        else
         {
             <tr>
-                <td>@order.CustomerName</td>
-                <td>@order.CreatedAt.ToOffset(TimeSpan.FromHours(7)).DateTime</td>
+                <td colspan="2">No data available</td>
             </tr>
         }
     </tbody>
 </table>
 
-@await Html.PartialAsync("_PaginationPartial", Model.Pagination)
+@await Html.PartialAsync("_PaginationPartial", Model?.Pagination)
 
 @section Scripts {
     <script>

@@ -26,11 +26,13 @@ namespace Training.Api.Controllers
 
             try
             {
+                // Check if passwords match
                 if (registerRequest.Password != registerRequest.RepeatPassword)
                 {
                     response.Error = "Passwords do not match";
                     return BadRequest(response);
                 }
+
                 var result = await customerService.RegisterCustomer(Mapper.Map<CustomerDto>(registerRequest));
 
                 if (result)
@@ -41,37 +43,47 @@ namespace Training.Api.Controllers
                 }
                 else
                 {
+                    // Handle the case where the email already exists
                     response.Error = "Email already exists";
                     return BadRequest(response);
                 }
             }
+            catch (ArgumentNullException ex)
+            {
+                Logger.LogWarning("Registration failed due to null value: {ex}", ex);
+                response.Error = ex.Message;
+                return BadRequest(response);
+            }
             catch (Exception ex)
             {
-                Logger.LogError("Register unsuccessful: {ex}", ex);
-                response.Success = false;
-                return InternalServerError(response);
+                Logger.LogError("Registration unsuccessful: {ex}", ex);
+                response.Error = "An error occurred while processing your request";
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
         [HttpPost("login")]
-        [ProducesResponseType(typeof(ResultRes<string>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResultRes<string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ResultRes<LoginRes>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResultRes<LoginRes>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ResultRes<LoginRes>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Login([FromBody] LoginReq loginReq)
         {
             var response = new ResultRes<LoginRes>();
 
             try
             {
+                var (token, user) = await customerService.LoginAsync(Mapper.Map<CustomerDto>(loginReq));
 
-                var (success, token, user) = await customerService.LoginAsync(Mapper.Map<CustomerDto>(loginReq));
-
-                if (!success)
-                {
-                    response.Error = "Invalid email or password";
-                    return Unauthorized(response);
-                }
                 response.Success = true;
                 response.Result = new LoginRes { Token = token, User = user };
                 return Ok(response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Logger.LogWarning("Invalid login attempt: {ex}", ex);
+                response.Success = false;
+                response.Error = ex.Message;
+                return Unauthorized(response);
             }
             catch (Exception ex)
             {
@@ -81,6 +93,7 @@ namespace Training.Api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
 
         [Authorize]
         [HttpPost("change-password")]

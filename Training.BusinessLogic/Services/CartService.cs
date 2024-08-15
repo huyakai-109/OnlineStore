@@ -16,9 +16,7 @@ namespace Training.BusinessLogic.Services
         Task<bool> EditQuantity(EditCartQuantityDto editCartQuantityDto);
         Task<bool> RemoveProduct(RemoveProductFCartDto removeProductFCartDto);
     }
-    public class CartService(
-        IMapper mapper,
-        IUnitOfWork unitOfWork) : ICartService
+    public class CartService(IUnitOfWork unitOfWork) : ICartService
     {
         public async Task<bool> EditQuantity(EditCartQuantityDto editCartQuantityDto)
         {

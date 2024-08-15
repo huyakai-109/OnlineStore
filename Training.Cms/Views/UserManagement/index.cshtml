@@ -32,7 +32,9 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model.Items)
+        @if (Model != null && Model.Items != null && Model.Items.Any())
+        {
+             @foreach (var user in Model.Items)
         {
             <tr>
                 <td>@user.FirstName</td>
@@ -44,7 +46,15 @@
                     <button data-id="@user.Id" class="btn btn-danger deleteBtn" type="button">Delete</button>
                 </td>
             </tr>
+        }            
         }
+        else
+        {
+            <tr>
+                <td colspan="2">No data available</td>
+            </tr>
+        }
+       
     </tbody>
 </table>
 
@@ -55,7 +65,7 @@
     <input type="hidden" id="userId" name="Id" />
 </form>
 
-@await Html.PartialAsync("_PaginationPartial", Model.Pagination)
+@await Html.PartialAsync("_PaginationPartial", Model?.Pagination)
 
 
 

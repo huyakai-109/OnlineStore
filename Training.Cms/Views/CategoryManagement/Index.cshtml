@@ -32,20 +32,23 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var category in Model.Items)
-        {
-            <tr>
-                <td>@category.Name</td>
-                <td>@category.Description</td>
-                <td>
-                    <img src="@category.ImagePath" alt="Image" class="img-fluid" style="max-width: 53px; max-height:34px" />
-                </td>
-                <td>
-                    <button class="btn btn-warning editCategory" data-id="@category.Id">Edit</button>
-                    <button data-id="@category.Id" class="btn btn-danger deleteBtn" type="button">Delete</button>
-                </td>
-            </tr>
-        }
+         @if (Model != null && Model.Items != null && Model.Items.Any())
+         {
+            foreach (var category in Model.Items)
+            {
+                <tr>
+                    <td>@category.Name</td>
+                    <td>@category.Description</td>
+                    <td>
+                        <img src="@category.ImagePath" alt="Image" class="img-fluid" style="max-width: 53px; max-height:34px" />
+                    </td>
+                    <td>
+                        <button class="btn btn-warning editCategory" data-id="@category.Id">Edit</button>
+                        <button data-id="@category.Id" class="btn btn-danger deleteBtn" type="button">Delete</button>
+                    </td>
+                </tr>
+            }
+         }
     </tbody>
 </table>
 <div id="modalContainer"></div>
@@ -54,7 +57,7 @@
     <input type="hidden" id="CategoryId" name="Id" />
 </form>
 
-@await Html.PartialAsync("_PaginationPartial", Model.Pagination)
+@await Html.PartialAsync("_PaginationPartial", Model?.Pagination)
 @section Scripts {
     <script>
         $(document).ready(function () {

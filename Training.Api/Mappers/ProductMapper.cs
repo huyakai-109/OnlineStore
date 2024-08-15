@@ -16,8 +16,7 @@ namespace Training.Api.Mappers
                 .ForMember(d => d.Category, o => o.MapFrom(s => s.Category.Name))
                 .ReverseMap();
             CreateMap<CustomerProductDto, ProductRes>();
-            CreateMap<SearchReq, ProductSearchDto>();
-            CreateMap<SearchReq, SearchDto>();
+            CreateMap<SearchReq, CommonSearchDto>();
         }
     }
 }

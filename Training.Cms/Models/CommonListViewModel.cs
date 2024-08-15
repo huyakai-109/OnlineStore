@@ -4,7 +4,7 @@ namespace Training.Cms.Models
 {
     public class CommonListViewModel<T>
     {
-        public List<T> Items { get; set; }
-        public Pagination Pagination { get; set; }
+        public List<T>? Items { get; set; }
+        public Pagination? Pagination { get; set; }
     }
 }

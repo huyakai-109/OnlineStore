@@ -7,10 +7,11 @@ using Training.BusinessLogic.Dtos.Admin;
 using Training.BusinessLogic.Dtos.Base;
 using Training.BusinessLogic.Services.Admin;
 using Training.Cms.Models;
+using Training.Common.Constants;
 
 namespace Training.Cms.Controllers
 {
-    [Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "Admin")]
     public class UserManagementController : Controller
     {
         private readonly IUserManagementService _userManagementService;
@@ -109,7 +110,7 @@ namespace Training.Cms.Controllers
         {
             var users = await _userManagementService.GetAllUsers();  
             var csvFile = _userManagementService.ExportUsersToCsv(users);
-            return File(csvFile, "text/csv", "Users.csv");
+            return File(csvFile, GlobalConstants.Files.CsvContentType, "Users.csv");
         }
 
         public IActionResult Error(string message, string controllerName)

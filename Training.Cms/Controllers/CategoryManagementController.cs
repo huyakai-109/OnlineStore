@@ -10,7 +10,7 @@ using Training.Cms.Models;
 
 namespace Training.Cms.Controllers
 {
-    [Authorize(Policy = "AdminClerk")]
+    [Authorize(Policy = "AdminOrClerk")]
     public class CategoryManagementController : Controller
     {
         private readonly ICategoryManagementService _categoryManagementService;

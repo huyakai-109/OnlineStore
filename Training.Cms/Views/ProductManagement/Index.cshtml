@@ -31,34 +31,44 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var product in Model.Items)
+         @if (Model != null && Model.Items != null && Model.Items.Any())
         {
-            <tr>
-                <td>@product.Name</td>
-                <td> @product.Description</td>
-                <td>
-                    <div id="imageDropdownContainer-@product.Id">
-                        @if (!string.IsNullOrEmpty(product.Thumbnail))
-                        {
-                            <img src="@product.Thumbnail" alt="Thumbnail" class="img-Thumbnail" style="max-width: 53px; max-height:34px" />
+            @foreach (var product in Model.Items)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td> @product.Description</td>
+                    <td>
+                        <div id="imageDropdownContainer-@product.Id">
+                            @if (!string.IsNullOrEmpty(product.Thumbnail))
+                            {
+                                <img src="@product.Thumbnail" alt="Thumbnail" class="img-Thumbnail" style="max-width: 53px; max-height:34px" />
 
-                        }
-                        else
-                        {
-                            <span>No thumbnail</span>
-                        }
-                    </div>
-                </td>
-                <td class="text-start">@product.UnitPrice</td>
-                <td>@product.Category</td>
-                <td>@product.CreatedBy</td>
-                <td>
-                    <button class="btn btn-info addImage" data-id="@product.Id">Add Image</button>
-                    <button class="btn btn-warning editProduct" data-id="@product.Id">Edit</button>
-                    <button data-id="@product.Id" class="btn btn-danger deleteBtn" type="button">Delete</button>
-                </td>
-            </tr>
+                            }
+                            else
+                            {
+                                <span>No thumbnail</span>
+                            }
+                        </div>
+                    </td>
+                    <td class="text-start">@product.UnitPrice</td>
+                    <td>@product.Category</td>
+                    <td>@product.CreatedBy</td>
+                    <td>
+                        <button class="btn btn-info addImage" data-id="@product.Id">Add Image</button>
+                        <button class="btn btn-warning editProduct" data-id="@product.Id">Edit</button>
+                        <button data-id="@product.Id" class="btn btn-danger deleteBtn" type="button">Delete</button>
+                    </td>
+                </tr>
+            }
         }
+        else
+         {
+             <tr>
+                 <td colspan="2">No data available</td>
+             </tr>
+         }
+      
     </tbody>
 </table>
 <div id="modalContainer"></div>
@@ -66,7 +76,7 @@
     <input type="hidden" id="productId" name="Id" />
 </form>
 
-@await Html.PartialAsync("_PaginationPartial", Model.Pagination)
+@await Html.PartialAsync("_PaginationPartial", Model?.Pagination)
 @section Scripts {
     <script>
         $(document).ready(function () {

@@ -38,9 +38,11 @@ namespace Training.BusinessLogic.Services.Admin
         public async Task CreateUser(UserDto userDto)
         {
             var user = mapper.Map<User>(userDto);
-            user.Password = CommonHelper.ComputeHash(userDto.Password);
-            user.CreatedAt = DateTime.UtcNow;
-
+            if(!string.IsNullOrEmpty(userDto.Password))
+            {
+                user.Password = CommonHelper.ComputeHash(userDto.Password);
+                user.CreatedAt = DateTime.UtcNow;
+            }
             await unitOfWork.GetRepository<User>().Add(user);
             await unitOfWork.SaveChanges();
         }

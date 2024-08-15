@@ -26,21 +26,31 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var stock in Model.Items)
+        @if (Model != null && Model.Items != null && Model.Items.Any())
+        {
+            @foreach (var stock in Model.Items)
+            {
+                <tr>
+                    <td>@stock.Product</td>
+                    <td>@stock.Category</td>
+                    <td class="text-center"> @stock.Quantity</td>
+                    <td>
+                        <a class="btn btn-warning" asp-action="Edit" asp-route-id="@stock.Id">Adjust Quantity</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
         {
             <tr>
-                <td>@stock.Product</td>
-                <td>@stock.Category</td>
-                <td class="text-center"> @stock.Quantity</td>
-                <td>
-                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@stock.Id">Adjust Quantity</a>
-                </td>
+                <td colspan="2">No data available</td>
             </tr>
         }
+       
     </tbody>
 </table>
 
-@await Html.PartialAsync("_PaginationPartial", Model.Pagination)
+@await Html.PartialAsync("_PaginationPartial", Model?.Pagination)
 
 @section Scripts {
     <script>

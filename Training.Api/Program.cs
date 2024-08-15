@@ -17,35 +17,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
-// Add JWT authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = config[ConfigKeys.Security.Jwt.Issuer],
-            ValidAudience = config[ConfigKeys.Security.Jwt.Audience],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config[ConfigKeys.Security.Jwt.Secret]))
-        };
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
-            {
-                var authorization = context.Request.Headers[RestfulConstants.RequestHeaders.Authorization];
-                if (authorization.Any() && authorization[0].StartsWith(RestfulConstants.RequestHeaders.AuthScheme))
-                {
-                    context.Token = authorization[0].Substring(RestfulConstants.RequestHeaders.AuthScheme.Length).Trim();
-                }
-                return Task.CompletedTask;
-            }
-        };
-        options.MapInboundClaims = false;
-    });
-
 builder.Services.AddControllers();
 
 var app = builder.Build();

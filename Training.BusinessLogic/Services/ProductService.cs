@@ -18,8 +18,7 @@ namespace Training.BusinessLogic.Services
    
      public interface ICustomerProductService
      {
-            Task<(List<CustomerProductDto> Items, int TotalCount, int CurrentCount)> GetProducts(SearchDto searchDto);
-            Task<(List<CustomerProductDto> Items, int TotalCount, int CurrentCount)> SearchProducts(ProductSearchDto searchDto);
+            Task<(List<CustomerProductDto> Items, int TotalCount, int CurrentCount)> GetProducts(CommonSearchDto search);
             Task<CustomerProductDto?> GetProductByIdAsync(long id);
             Task<bool> AddToCartAsync(AddToCartDto addToCartDto);
     }
@@ -38,38 +37,26 @@ namespace Training.BusinessLogic.Services
             return mapper.Map<CustomerProductDto>(product);
         }
 
-        public async Task<(List<CustomerProductDto> Items, int TotalCount, int CurrentCount)> GetProducts(SearchDto searchDto)
-        {
-            var query = await unitOfWork.GetRepository<Product>().QueryAllWithIncludes(p => !p.IsDeleted,disableTracking: true,p => p.Category);
-            var totalCount = await query.CountAsync();
-            var products = await query.Skip(searchDto.Skip).Take(searchDto.Take).ToListAsync();
-            var currentCount = products.Count;
-
-            return (mapper.Map<List<CustomerProductDto>>(products), totalCount, currentCount);
-        }
-
-        public async Task<(List<CustomerProductDto> Items, int TotalCount, int CurrentCount)> SearchProducts(ProductSearchDto searchDto)
+        public async Task<(List<CustomerProductDto> Items, int TotalCount, int CurrentCount)> GetProducts(CommonSearchDto search)
         {
             var query = await unitOfWork.GetRepository<Product>().QueryAllWithIncludes(p => !p.IsDeleted, disableTracking: true, p => p.Category);
 
-            if (!string.IsNullOrEmpty(searchDto.Category))
+            if (!string.IsNullOrEmpty(search.SearchQuery))
             {
-                query = query.Where(p => p.Category.Name.ToLower().Contains(searchDto.Category.ToLower())); 
-            }
+                var searchLower = search.SearchQuery.ToLower();
 
-            if (!string.IsNullOrEmpty(searchDto.Name))
-            {
-                query = query.Where(p => p.Name.ToLower().Contains(searchDto.Name.ToLower()));
+                query = query.Where(p => p.Category.Name.ToLower().Contains(searchLower)
+                                        || p.Name.ToLower().Contains(searchLower));
             }
-
-            query = searchDto.Ascending ? query.OrderBy(p => p.UnitPrice) : query.OrderByDescending(p => p.UnitPrice);
+            query = search.Ascending ? query.OrderBy(p => p.UnitPrice) : query.OrderByDescending(p => p.UnitPrice);
 
             var totalCount = await query.CountAsync();
-            var products = await query.Skip(searchDto.Skip).Take(searchDto.Take).ToListAsync();
+            var products = await query.Skip((search.Skip -1) * search.Take).Take(search.Take).ToListAsync();
             var currentCount = products.Count;
 
             return (mapper.Map<List<CustomerProductDto>>(products), totalCount, currentCount);
         }
+
         public async Task<bool> AddToCartAsync(AddToCartDto addToCartDto)
         {
             using var transaction = await unitOfWork.BeginTransactionAsync();

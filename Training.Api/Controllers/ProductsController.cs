@@ -55,7 +55,7 @@ namespace Training.Api.Controllers
             try
             {
 
-                var products = await customerProductService.GetProducts(Mapper.Map<SearchDto>(searchReq));
+                var products = await customerProductService.GetProducts(Mapper.Map<CommonSearchDto>(searchReq));
                 response.Result = Mapper.Map<List<ProductRes>>(products.Items);
                 response.Pagination = new PaginationRes(products.TotalCount, products.CurrentCount, searchReq.Skip, searchReq.Take);
                 response.Success = true;
@@ -69,29 +69,6 @@ namespace Training.Api.Controllers
                 return InternalServerError(response);
             }
         }
-        [HttpGet("search")]
-        [ProducesResponseType(typeof(PaginationResultRes<List<ProductRes>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> SearchProducts([FromQuery] SearchReq searchReq)
-
-        {
-            var response = new PaginationResultRes<List<ProductRes>>();
-            try
-            {
-                var products = await customerProductService.SearchProducts(Mapper.Map<ProductSearchDto>(searchReq));
-                response.Result = Mapper.Map<List<ProductRes>>(products.Items);
-                response.Pagination = new PaginationRes(products.TotalCount, products.CurrentCount, searchReq.Skip, searchReq.Take);
-                response.Success = true;
-
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Search products failed: {ex}", ex);
-                response.Success = false;
-                return InternalServerError(response);
-            }
-        }
-
         [HttpPost("add-to-cart")]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status400BadRequest)]
