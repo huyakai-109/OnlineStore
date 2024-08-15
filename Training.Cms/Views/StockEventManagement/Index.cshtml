@@ -29,20 +29,24 @@
         @if (Model != null && Model.Items != null && Model.Items.Any())
         {
             @foreach (var stockEvent in Model.Items)
-        {
-            <tr>
-                <td>@stockEvent.Product</td>
-                <td>@stockEvent.Category</td>
-                <td>@stockEvent.Type</td>
-                <td>@stockEvent.Reason</td>
-                <td class="text-center"> @stockEvent.Quantity</td>
-            </tr>
-        }            
+            {
+                <tr>
+                    <td>@stockEvent.Product</td>
+                    <td>@stockEvent.Category</td>
+                    <td>@stockEvent.Type</td>
+                    <td>@stockEvent.Reason</td>
+                    <td class="text-center"> @stockEvent.Quantity</td>
+                </tr>
+            }            
         }
         else
         {
             <tr>
-                <td colspan="2">No data available</td>
+                <td></td>
+                <td></td>
+                <td>No data available</td>
+                <td></td>
+                <td></td>
             </tr>
         }
     </tbody>
