@@ -14,7 +14,8 @@ namespace Training.Api.Mappers
             CreateMap<Order, OrderDto>();
             CreateMap<OrderDto, OrderRes>();
             CreateMap<OrderDetail, OrderDetailDTO>()
-                    .ForMember(odd => odd.ProductName, o => o.MapFrom(o => o.Product.Name));
+                    .ForMember(odd => odd.ProductName, o => o.MapFrom(o => o.Product.Name))
+                    .ForMember(odd => odd.Thumbnail, o => o.MapFrom(o => o.Product.Thumbnail));
             CreateMap<OrderDetailDTO, OrderDetailRes>();
         }
     }

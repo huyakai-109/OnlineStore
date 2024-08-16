@@ -7,6 +7,6 @@
         public float UnitPrice { get; set; }
         public int Quantity { get; set; }
         public string? ProductName { get; set; }
-        //public string? Thumbnail { get; set; }
+        public string? Thumbnail { get; set; }
     }
 }

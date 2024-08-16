@@ -51,13 +51,6 @@ namespace Training.Api.Controllers
                 response.Result = true;
                 return Ok(response);
             }
-            catch (InvalidOperationException ex)
-            {
-                Logger.LogError("Purchase cart failed: {ex}", ex);
-                response.Success = false;
-                response.Error = ex.Message;
-                return BadRequest(response);
-            }
             catch (Exception ex)
             {
                 Logger.LogError("Purchase cart failed: {ex}", ex);

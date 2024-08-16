@@ -41,7 +41,6 @@ namespace Training.BusinessLogic.Services
                 var order = new Order
                 {
                     CustomerId = purchaseCartDto.UserId,
-                    CreatedAt = DateTimeOffset.Now,
                     OrderDetails = new List<OrderDetail>()
                 };
                 await orderRepo.Add(order);
@@ -49,12 +48,6 @@ namespace Training.BusinessLogic.Services
 
                 foreach(var item in cart.CartItems)
                 {
-                    var stock = await stockRepo.Single(s => s.ProductId == item.ProductId);
-                    if (stock == null || stock.Quantity < item.Quantity)
-                    {
-                        throw new InvalidOperationException($"Insufficient stock quantity for product {item.ProductId}.");
-                    }
-
                     var orderDetail = new OrderDetail
                     {
                         OrderId = order.Id,
@@ -66,8 +59,12 @@ namespace Training.BusinessLogic.Services
                     order.OrderDetails.Add(orderDetail);
                     await orderDetailRepo.Add(orderDetail);
 
-
                     // Update stock quantity
+                    var stock = await stockRepo.Single(s => s.ProductId == item.ProductId);
+                    if (stock == null)
+                    {
+                        return false;
+                    }
                     stock.Quantity -= item.Quantity;
                     await stockRepo.Update(stock);
 
@@ -107,14 +104,14 @@ namespace Training.BusinessLogic.Services
 
         }
 
-        //public async Task<OrderDto> GetOrderDetails(long orderId)
-        //{
-        //    var orderRepo = unitOfWork.GetRepository<Order>();
-        //    var order = await orderRepo.Single(o => o.Id == orderId && o.CustomerId == userId && !o.IsDeleted,
-        //                                       include: o => o.Include(ord => ord.OrderDetails)
-        //                                                      .ThenInclude(od => od.Product));
-        //    return order;
-        //}
+        /*public async Task<OrderDto> GetOrderDetails(long orderId)
+        {
+            var orderRepo = unitOfWork.GetRepository<Order>();
+            var order = await orderRepo.Single(o => o.Id == orderId && o.CustomerId == userId && !o.IsDeleted,
+                                               include: o => o.Include(ord => ord.OrderDetails)
+                                                              .ThenInclude(od => od.Product));
+            return order;
+        }*/
 
     }
 }

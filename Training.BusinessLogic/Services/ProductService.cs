@@ -30,11 +30,19 @@ namespace Training.BusinessLogic.Services
    
         public async Task<CustomerProductDto?> GetProductByIdAsync(long id)
         {
-            // còn thiếu lấy thêm ảnh từ productImages để fill lên productDetails
             var product = await unitOfWork.GetRepository<Product>().Single(p => p.Id == id, include: p => p.Include(x => x.Category));
             if (product == null) return null;
 
-            return mapper.Map<CustomerProductDto>(product);
+            var productImages = await unitOfWork.GetRepository<ProductImage>().QueryCondition(pi => pi.ProductId == id);
+            if (productImages == null) return null;
+
+            var productDto = mapper.Map<CustomerProductDto>(product);
+            var listImage = await productImages.ToListAsync();  
+            productDto.ProductImage = productImages.Where(pi => !string.IsNullOrEmpty(pi.Path) && pi.Path != productDto.Thumbnail)
+                                                   .Select(pi => pi.Path)
+                                                   .ToList(); 
+
+            return productDto;
         }
 
         public async Task<(List<CustomerProductDto> Items, int TotalCount, int CurrentCount)> GetProducts(CommonSearchDto search)
@@ -87,6 +95,7 @@ namespace Training.BusinessLogic.Services
                 // add  cart item
                 var cartItem = mapper.Map<CartItem>(addToCartDto);
                 cartItem.CartId = cart.Id;
+
                 cart.CartItems.Add(cartItem);
                 await cartItemRepo.Add(cartItem);
                

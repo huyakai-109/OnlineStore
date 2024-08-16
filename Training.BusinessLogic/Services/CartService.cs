@@ -13,11 +13,33 @@ namespace Training.BusinessLogic.Services
 {
     public interface ICartService
     {
+        Task<CartDto?> GetCart(long userId);
         Task<bool> EditQuantity(EditCartQuantityDto editCartQuantityDto);
         Task<bool> RemoveProduct(RemoveProductFCartDto removeProductFCartDto);
     }
-    public class CartService(IUnitOfWork unitOfWork) : ICartService
+    public class CartService(IUnitOfWork unitOfWork, IMapper mapper) : ICartService
     {
+        public async Task<CartDto?> GetCart(long userId)
+        {
+           /* var cart = await unitOfWork.GetRepository<Cart>().Single(c => c.UserId == userId && !c.IsPurchased);
+            if (cart == null) return null;
+
+            var cartItems = await unitOfWork.GetRepository<CartItem>().QueryAllWithIncludes(ci => ci.CartId == cart.Id, disableTracking: true, ci => ci.Product);
+            if (cartItems == null) return null;
+
+            var cartDto = mapper.Map<CartDto>(cart);
+            cartDto.CartItems = mapper.Map<List<CartItemDto>>(await cartItems.ToListAsync());
+
+            return cartDto;*/
+
+            var cartRepo = unitOfWork.GetRepository<Cart>();
+            var cart = await cartRepo.Single(c => c.UserId == userId && !c.IsPurchased,
+                                                           include: c => c.Include(c => c.CartItems).ThenInclude(ci => ci.Product));
+            if (cart == null) return null;
+
+            return mapper.Map<CartDto>(cart);
+        }
+
         public async Task<bool> EditQuantity(EditCartQuantityDto editCartQuantityDto)
         {
             using var transaction = await unitOfWork.BeginTransactionAsync();
@@ -63,6 +85,7 @@ namespace Training.BusinessLogic.Services
                 throw;
             }
         }
+
 
         public async Task<bool> RemoveProduct(RemoveProductFCartDto removeProductFCartDto)
         {

@@ -8,5 +8,6 @@
         public string? Thumbnail { get; set; }
         public float UnitPrice { get; set; }
         public string? Category { get; set; }
+        public List<string>? ProductImage { get; set; }
     }
 }

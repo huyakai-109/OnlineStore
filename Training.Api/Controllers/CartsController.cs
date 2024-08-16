@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using Training.Api.Models.Requests.Carts;
 using Training.Api.Models.Responses.Base;
+using Training.Api.Models.Responses.Cart;
 using Training.BusinessLogic.Dtos.Customers;
 using Training.BusinessLogic.Services;
 
@@ -14,6 +15,44 @@ namespace Training.Api.Controllers
          IMapper mapper,
          ICartService cartService) : BaseController(logger, mapper)
     {
+        [Authorize]
+        [HttpGet]
+        [ProducesResponseType(typeof(ResultRes<CartRes>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResultRes<CartRes>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetCart()
+        {
+            var response = new ResultRes<CartRes>();
+
+            try
+            {
+                var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub);
+                if (userIdClaim == null)
+                {
+                    response.Error = "User ID not found";
+                    return BadRequest(response);
+                }
+                var userId = long.Parse(userIdClaim.Value);
+
+                var result = await cartService.GetCart(userId);
+                if (result == null)
+                {
+                    response.Error = "Failed to get cart item";
+                    return BadRequest(response);
+                }
+
+                response.Result = Mapper.Map<CartRes>(result);
+                response.Success = true;    
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+
+                Logger.LogError("Get cart Item failed: {ex}", ex);
+                response.Success = false;
+                return InternalServerError(response);
+            }
+        }
 
         [Authorize]
         [HttpPost("edit-quantity")]

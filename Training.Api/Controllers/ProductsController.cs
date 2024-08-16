@@ -28,7 +28,6 @@ namespace Training.Api.Controllers
             var response = new ResultRes<ProductRes?>();
             try
             {
-                // còn thiếu lấy thêm ảnh từ productImages
                 response.Result = Mapper.Map<ProductRes>(await customerProductService.GetProductByIdAsync(id));
 
                 if (response.Result == null)
