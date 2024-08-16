@@ -46,8 +46,6 @@ namespace Training.BusinessLogic.Services
             var user = mapper.Map<User>(customerDto);
             user.Password = CommonHelper.ComputeHash(customerDto.Password);
             user.Role = UserRole.Customer;
-            user.IsDeleted = false;
-
             
             await customerRepo.Add(user);
             await unitOfWork.SaveChanges();
@@ -78,9 +76,9 @@ namespace Training.BusinessLogic.Services
 
                 return (token, userDto);
             }
-            catch (Exception ex)
+            catch (InvalidOperationException)
             {
-                throw new InvalidOperationException("An error occurred during login.", ex);
+                throw;
             }
         }
 

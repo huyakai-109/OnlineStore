@@ -18,7 +18,6 @@ namespace Training.Api.Controllers
         IMapper mapper,
         IOrderService orderService): BaseController(logger, mapper)
     {
-        [Authorize]
         [HttpPost("purchase")]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status400BadRequest)]
@@ -32,7 +31,7 @@ namespace Training.Api.Controllers
                 if (userIdClaim == null)
                 {
                     response.Error = "User ID not found";
-                    return BadRequest(response);
+                    return Unauthorized(response);
                 }
                 var userId = long.Parse(userIdClaim.Value);
 
@@ -58,7 +57,7 @@ namespace Training.Api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-        [Authorize]
+
         [HttpGet]
         [ProducesResponseType(typeof(ResultRes<List<OrderRes>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetOrders()
@@ -71,7 +70,7 @@ namespace Training.Api.Controllers
                 if(userClaimId == null)
                 {
                     response.Error = "User ID not found";
-                    return BadRequest(response);
+                    return Unauthorized(response);
                 }
                 var userId = long.Parse(userClaimId.Value);
 

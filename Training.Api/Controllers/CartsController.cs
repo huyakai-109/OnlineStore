@@ -15,7 +15,6 @@ namespace Training.Api.Controllers
          IMapper mapper,
          ICartService cartService) : BaseController(logger, mapper)
     {
-        [Authorize]
         [HttpGet]
         [ProducesResponseType(typeof(ResultRes<CartRes>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResultRes<CartRes>), StatusCodes.Status400BadRequest)]
@@ -29,7 +28,7 @@ namespace Training.Api.Controllers
                 if (userIdClaim == null)
                 {
                     response.Error = "User ID not found";
-                    return BadRequest(response);
+                    return Unauthorized(response);
                 }
                 var userId = long.Parse(userIdClaim.Value);
 
@@ -54,7 +53,6 @@ namespace Training.Api.Controllers
             }
         }
 
-        [Authorize]
         [HttpPost("edit-quantity")]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status400BadRequest)]
@@ -68,7 +66,7 @@ namespace Training.Api.Controllers
                 if (userIdClaim == null)
                 {
                     response.Error = "User ID not found";
-                    return BadRequest(response);
+                    return Unauthorized(response);
                 }
                 var userId = long.Parse(userIdClaim.Value);
 
@@ -102,7 +100,7 @@ namespace Training.Api.Controllers
                 return InternalServerError(response);
             }
         }
-        [Authorize]
+
         [HttpPost("remove-product")]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status400BadRequest)]
@@ -115,7 +113,7 @@ namespace Training.Api.Controllers
                 if(UserIdClaim == null)
                 {
                     response.Error = "User ID not found";
-                    return BadRequest(response);
+                    return Unauthorized(response);
                 }
                 var userId = long.Parse(UserIdClaim.Value);
 

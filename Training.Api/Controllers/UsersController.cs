@@ -94,8 +94,6 @@ namespace Training.Api.Controllers
             }
         }
 
-
-        [Authorize]
         [HttpPost("change-password")]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status400BadRequest)]
@@ -107,8 +105,8 @@ namespace Training.Api.Controllers
 
             if (string.IsNullOrEmpty(userId) || !long.TryParse(userId, out var userIdLong))
             {
-                response.Error = "User ID is invalid";
-                return BadRequest(response);
+                response.Error = "User ID not found or token has expired.";
+                return Unauthorized(response);
             }
 
             if (changePasswordReq.NewPassword != changePasswordReq.RepeatNewPassword)
@@ -133,8 +131,6 @@ namespace Training.Api.Controllers
             return Ok(response);
         }
 
-
-        [Authorize]
         [HttpGet("profile")]
         [ProducesResponseType(typeof(ResultRes<ProfileRes>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResultRes<ProfileRes>), StatusCodes.Status400BadRequest)]
@@ -149,11 +145,9 @@ namespace Training.Api.Controllers
 
                 if (userIdClaim == null)
                 {
-                    response.Error = "User ID not found";
-                    return BadRequest(response);
+                    response.Error = "User ID not found or token has expired.";
+                    return Unauthorized(response);
                 }
-
-               
 
                 var customerDto = await customerService.GetProfileAsync(long.Parse(userIdClaim));
 
@@ -166,7 +160,7 @@ namespace Training.Api.Controllers
                 else
                 {
                     response.Error = "Profile not found";
-                    return BadRequest(response);
+                    return NotFound(response);
                 }
             }
             catch (Exception ex)

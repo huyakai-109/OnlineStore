@@ -111,7 +111,8 @@ namespace Training.BusinessLogic.Services
                 }
 
                 cart.CartItems.Remove(cartItem);
-                await cartItemRepo.Delete(cartItem);
+                cartItem.IsDeleted = true;  
+                await cartItemRepo.Update(cartItem);
 
                 await unitOfWork.SaveChanges();
                 await transaction.CommitAsync();

@@ -46,6 +46,7 @@ namespace Training.Api.Controllers
                 return InternalServerError(response);
             }
         }
+
         [HttpGet]
         [ProducesResponseType(typeof(PaginationResultRes<List<ProductRes>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProducts([FromQuery] SearchReq searchReq)
@@ -68,6 +69,7 @@ namespace Training.Api.Controllers
                 return InternalServerError(response);
             }
         }
+
         [HttpPost("add-to-cart")]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status400BadRequest)]
@@ -80,7 +82,7 @@ namespace Training.Api.Controllers
                 if (userIdClaim == null)
                 {
                     response.Error = "User ID not found";
-                    return BadRequest(response);
+                    return Unauthorized(response);
                 }
                 var userId = long.Parse(userIdClaim.Value);
 
