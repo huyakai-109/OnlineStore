@@ -11,6 +11,7 @@ using Training.BusinessLogic.Dtos.Base;
 using Training.BusinessLogic.Dtos.Customers;
 using Training.DataAccess.Entities;
 using Training.Repository.UoW;
+using static Training.Common.Constants.GlobalConstants;
 
 
 namespace Training.BusinessLogic.Services
@@ -56,7 +57,14 @@ namespace Training.BusinessLogic.Services
                 query = query.Where(p => p.Category.Name.ToLower().Contains(searchLower)
                                         || p.Name.ToLower().Contains(searchLower));
             }
-            query = search.Ascending ? query.OrderBy(p => p.UnitPrice) : query.OrderByDescending(p => p.UnitPrice);
+            if (search.Sort == SortDirection.Ascending)
+            {
+                query = query.OrderBy(p => p.UnitPrice);
+            }
+            else if (search.Sort == SortDirection.Descending)
+            {
+                query = query.OrderByDescending(p => p.UnitPrice);
+            }
 
             var totalCount = await query.CountAsync();
             var products = await query.Skip((search.Skip -1) * search.Take).Take(search.Take).ToListAsync();
