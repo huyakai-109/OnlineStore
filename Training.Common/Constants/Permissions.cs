@@ -4,52 +4,27 @@
     {
         public static string[] All =
         [
-            Employees.ViewEmployees,
-            Employees.ManageEmployees,
-            Customers.ViewCustomers,
-            Customers.ManageCustomers,
-
+            User.ViewUsers,
+            User.ManageUsers,
             Products.ViewProducts,
             Products.ManageProducts,
             Categories.ViewCategories,
             Categories.ManageCategories,
             Stocks.ViewStocks,
             Stocks.ManageStocks,
+            StockEvents.ViewStockEvents,
             Orders.ViewOrders,
-            Orders.ManageOrders,
             Reports.ViewReports
-
         ];
 
         /// <summary>
-        /// Manage = Create, Edit, Update
+        /// Manage = Create, Update, Delete
         /// </summary>
         /// 
-        public static string[] Clerk =
+        public struct User
         {
-            Products.ViewProducts,
-            Products.ManageProducts,
-            Categories.ViewCategories,
-            Categories.ManageCategories,
-            Stocks.ViewStocks,
-            Stocks.ManageStocks,
-            Orders.ViewOrders,
-            Orders.ManageOrders,
-            Reports.ViewReports
-        };
-
-        public struct Employees
-        {
-            public const string ViewEmployees = "ViewEmployees";
-
-            public const string ManageEmployees = "ManageEmployees";
-        }
-
-        public struct Customers
-        {
-            public const string ViewCustomers = "ViewCustomers";
-
-            public const string ManageCustomers = "ManageCustomers";
+            public const string ViewUsers = "ViewUsers";
+            public const string ManageUsers = "ManageUsers";
         }
 
         public struct Products
@@ -70,10 +45,14 @@
             public const string ManageStocks = "ManageStocks";
         }
 
+        public struct StockEvents
+        {
+            public const string ViewStockEvents = "ViewStockEvents";
+        }
+
         public struct Orders
         {
             public const string ViewOrders = "ViewOrders";
-            public const string ManageOrders = "ManageOrders";
         }
 
         public struct Reports

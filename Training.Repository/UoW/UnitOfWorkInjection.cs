@@ -16,7 +16,7 @@ namespace Training.Repository.UoW
                 throw new ArgumentNullException(nameof(connectionString), "Database connection string is null");
             }
 
-            var serverVersion = new MySqlServerVersion(new Version(9, 0, 0));
+            var serverVersion = new MySqlServerVersion(new Version(8, 4, 0));
 
             collection.AddDbContext<MyDbContext>(options =>
                 options.UseMySql(connectionString, serverVersion));

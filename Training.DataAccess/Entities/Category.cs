@@ -1,28 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Training.DataAccess.IEntities;
 
 namespace Training.DataAccess.Entities
 {
 
     [Table("Categories")]
-    public class Category : IIsDeletedEntity, IBaseEntity
+    public class Category : BaseEntity, IIsDeletedEntity
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Image { get; set; }
-        public bool IsDeleted { get; set; }
-        public long CreatedBy { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public long UpdatedBy { get; set; }
-        public DateTimeOffset UpdatedAt { get; set; }
 
-        public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+        [Required]
+        [MaxLength(255)]
+        public string Name { get; set; }
+
+        [MaxLength(500)]
+        public string Description { get; set; }
+
+        public string Image { get; set; }
+
+        public bool IsDeleted { get; set; }
+
+        public virtual ICollection<Product> Products { get; set; }
     }
 
 }

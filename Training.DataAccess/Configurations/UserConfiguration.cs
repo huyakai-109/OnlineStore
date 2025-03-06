@@ -1,35 +1,42 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Training.Common.Constants;
 using Training.DataAccess.Entities;
 
-namespace Training.DataAccess.Configurations
+namespace Tricor.BillingProcess.DataAccess.Configurations
 {
-    internal class UserConfiguration : IEntityTypeConfiguration<User>
+    public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.HasKey(u => u.Id);
-            builder.Property(u => u.Id).ValueGeneratedOnAdd();
-            builder.Property(u => u.Email).IsRequired().HasMaxLength(255);
-            builder.HasIndex(u => u.Email).IsUnique();
-            builder.Property(u => u.Password).IsRequired().HasMaxLength(255);
-            builder.Property(u => u.FirstName).IsRequired().HasMaxLength(100);
-            builder.Property(u => u.LastName).IsRequired().HasMaxLength(100);
-            builder.Property(u => u.CivilianId).HasMaxLength(100);
-            builder.Property(u => u.PhoneNumber).HasMaxLength(20);
-            builder.Property(u => u.DateOfBirth).IsRequired();
-            builder.Property(u => u.Role).IsRequired();
-            builder.Property(u => u.IsDeleted).HasDefaultValue(false);
+            builder.HasKey(role => role.Id).HasName("UserId");
+            builder.HasIndex(user => user.NormalizedUserName).HasDatabaseName("UserNameIndex");
+            builder.HasIndex(user => user.NormalizedEmail).HasDatabaseName("EmailIndex");
+            builder.Property(user => user.ConcurrencyStamp).IsConcurrencyToken();
+            builder.Property(user => user.UserName).HasMaxLength(256);
+            builder.Property(user => user.NormalizedUserName).HasMaxLength(256);
+            builder.Property(user => user.Email).HasMaxLength(256);
+            builder.Property(user => user.NormalizedEmail).HasMaxLength(256);
 
-            builder.HasMany(u => u.Carts)
-                   .WithOne(c => c.User)
-                   .HasForeignKey(c => c.UserId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasData(
+                new User
+                {
+                    Id = UserConstants.AdminId,
+                    UserName = "admin",
+                    IsAdmin = true,
+                    PasswordHash = "AQAAAAEAACcQAAAAEELKNErj+EBVy3yZwAI32HSAQILEj5UAOooOEHTMPYU/yp0E28xNH1BjU/SEBw8kuA==", // Admin!1234
+                    LockoutEnabled = true,
+                    ConcurrencyStamp = "616f1653-48e9-4a6f-81b3-1bdd52e565b5",
+                    NormalizedUserName = "ADMIN",
+                    SecurityStamp = "ZY5BGSWBARTE74T6ZLO7WKKMMILBEB2E",
+                    CreatedAt = new DateTime(2023, 10, 09, 0, 0, 0, 0, DateTimeKind.Utc).AddTicks(8363),
+                    UpdatedAt = new DateTime(2023, 10, 09, 0, 0, 0, 0, DateTimeKind.Utc).AddTicks(8363),
+                    CreatedBy = 1,
+                    UpdatedBy = 1,
+                    IsActive = true,
+                });
+
+            builder.HasQueryFilter(i => !i.IsDeleted);
         }
     }
 }

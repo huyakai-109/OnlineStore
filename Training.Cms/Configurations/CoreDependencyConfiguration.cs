@@ -40,14 +40,14 @@ namespace Training.Api.Configurations
                     options.Cookie.HttpOnly = true;
                 });
 
-            collection.AddAuthorization(options =>
-            {
-                options.AddPolicy("Admin", policy =>
-                    policy.RequireClaim(RolePolicies.ClaimType, RolePolicies.SysAdmin.Name));
+            //collection.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("Admin", policy =>
+            //        policy.RequireClaim(RolePolicies.ClaimType, RolePolicies.SysAdmin.Name));
 
-                options.AddPolicy("AdminOrClerk", policy =>
-                    policy.RequireClaim(RolePolicies.ClaimType, RolePolicies.SysAdmin.Name, RolePolicies.Clerk.Name));
-            });
+            //    options.AddPolicy("AdminOrClerk", policy =>
+            //        policy.RequireClaim(RolePolicies.ClaimType, RolePolicies.SysAdmin.Name, RolePolicies.Clerk.Name));
+            //});
         }
     }
 }

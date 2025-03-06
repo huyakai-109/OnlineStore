@@ -1,12 +1,5 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Training.BusinessLogic.Dtos.Customers;
-using Training.Common.EnumTypes;
 using Training.Common.Helpers;
 using Training.DataAccess.Entities;
 using Training.Repository.UoW;
@@ -44,8 +37,8 @@ namespace Training.BusinessLogic.Services
             }
 
             var user = mapper.Map<User>(customerDto);
-            user.Password = CommonHelper.ComputeHash(customerDto.Password);
-            user.Role = UserRole.Customer;
+            //user.Password = CommonHelper.ComputeHash(customerDto.Password);
+            //user.Role = UserRole.Customer;
             
             await customerRepo.Add(user);
             await unitOfWork.SaveChanges();
@@ -66,10 +59,10 @@ namespace Training.BusinessLogic.Services
 
                 var user = await customerRepo.Single(c => c.Email == customerDto.Email);
 
-                if (user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(customerDto.Password), user.Password))
-                {
-                    throw new InvalidOperationException("Invalid email or password.");
-                }
+                //if (user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(customerDto.Password), user.Password))
+                //{
+                //    throw new InvalidOperationException("Invalid email or password.");
+                //}
 
                 var userDto = mapper.Map<CustomerDto>(user);
                 var token = tokenService.GenerateToken(userDto);
@@ -88,17 +81,17 @@ namespace Training.BusinessLogic.Services
             var userRepo = unitOfWork.GetRepository<User>();
             var user = await userRepo.Single(u => u.Id == changePasswordDto.Id);
 
-            if (!string.IsNullOrEmpty(changePasswordDto.OldPassword) && !string.IsNullOrEmpty(changePasswordDto.NewPassword))
-            {
-                if (user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(changePasswordDto.OldPassword), user.Password))
-                {
-                    return false;
-                }
+            //if (!string.IsNullOrEmpty(changePasswordDto.OldPassword) && !string.IsNullOrEmpty(changePasswordDto.NewPassword))
+            //{
+            //    if (user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(changePasswordDto.OldPassword), user.Password))
+            //    {
+            //        return false;
+            //    }
 
-                user.Password = CommonHelper.ComputeHash(changePasswordDto.NewPassword);
+            //    user.Password = CommonHelper.ComputeHash(changePasswordDto.NewPassword);
 
-                await userRepo.Update(user);
-            }
+            //    await userRepo.Update(user);
+            //}
             await unitOfWork.SaveChanges();
 
             return true;
