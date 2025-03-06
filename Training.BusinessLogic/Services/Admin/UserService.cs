@@ -1,13 +1,5 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Training.BusinessLogic.Dtos.Admin;
-using Training.BusinessLogic.Dtos.Customers;
-using Training.Common.EnumTypes;
-using Training.Common.Helpers;
 using Training.DataAccess.Entities;
 using Training.Repository.UoW;
 using ChangePasswordDto = Training.BusinessLogic.Dtos.Admin.ChangePasswordDto;

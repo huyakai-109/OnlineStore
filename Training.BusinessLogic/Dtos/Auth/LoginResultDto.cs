@@ -1,9 +1,6 @@
-﻿using Training.BusinessLogic.Dtos.Customers;
-
-namespace Training.Api.Models.Responses.Users
+﻿namespace Training.BusinessLogic.Dtos.Auth
 {
- 
-    public class LoginRes
+    public class LoginResultDto
     {
         public string? Token { get; set; }
 

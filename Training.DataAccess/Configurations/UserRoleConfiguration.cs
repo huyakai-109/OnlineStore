@@ -4,7 +4,7 @@ using Training.Common.Constants;
 using Training.DataAccess.Entities;
 
 
-namespace Tricor.BillingProcess.DataAccess.Configurations
+namespace Training.DataAccess.Configurations
 {
     public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
     {

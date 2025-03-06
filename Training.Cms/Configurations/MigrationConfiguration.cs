@@ -2,7 +2,7 @@
 using Training.Common.Constants;
 using Training.DataAccess.DbContexts;
 
-namespace Training.Api.Configurations
+namespace Training.Cms.Configurations
 {
     public static class MigrationConfiguration
     {

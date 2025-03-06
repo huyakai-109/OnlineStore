@@ -14,8 +14,6 @@
         public static class Claim
         {
             public const string Name = "Name";
-            public const string JobTitle = "JobTitle";
-            public const string AvatarUrl = "AvatarUrl";
         }
     }
 }
