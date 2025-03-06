@@ -40,7 +40,7 @@ namespace Training.BusinessLogic.Services.Admin
             var user = mapper.Map<User>(userDto);
             if(!string.IsNullOrEmpty(userDto.Password))
             {
-                user.Password = CommonHelper.ComputeHash(userDto.Password);
+               // user.Password = CommonHelper.ComputeHash(userDto.Password);
                 user.CreatedAt = DateTime.UtcNow;
             }
             await unitOfWork.GetRepository<User>().Add(user);
@@ -95,13 +95,13 @@ namespace Training.BusinessLogic.Services.Admin
 
             if (!string.IsNullOrEmpty(search.SearchQuery))
             {
-                UserRole? roleEnum = EnumHelper<UserRole>.ToEnum(search.SearchQuery);
+                //UserRole? roleEnum = EnumHelper<UserRole>.ToEnum(search.SearchQuery);
                     
-                var searchLower = search.SearchQuery.ToLower();
-                query = query.Where(u => u.FirstName.ToLower() == searchLower
-                                      || u.LastName.ToLower() == searchLower
-                                      || u.Email.ToLower() == searchLower
-                                      || (roleEnum.HasValue && u.Role == roleEnum.Value));
+                //var searchLower = search.SearchQuery.ToLower();
+                //query = query.Where(u => u.FirstName.ToLower() == searchLower
+                //                      || u.LastName.ToLower() == searchLower
+                //                      || u.Email.ToLower() == searchLower
+                //                      || (roleEnum.HasValue && u.Role == roleEnum.Value));
 
             }
 
@@ -122,17 +122,17 @@ namespace Training.BusinessLogic.Services.Admin
                 return false; 
             }
 
-            user.FirstName = userDto.FirstName;
-            user.LastName = userDto.LastName;
-            user.Email = userDto.Email;
-            user.Role = userDto.Role;
-            user.CivilianId = userDto.CivilianId;
-            user.DateOfBirth = userDto.DateOfBirth;
-            user.PhoneNumber = userDto.PhoneNumber;
+            //user.FirstName = userDto.FirstName;
+            //user.LastName = userDto.LastName;
+            //user.Email = userDto.Email;
+            //user.Role = userDto.Role;
+            //user.CivilianId = userDto.CivilianId;
+            //user.DateOfBirth = userDto.DateOfBirth;
+            //user.PhoneNumber = userDto.PhoneNumber;
 
             if (!string.IsNullOrEmpty(userDto.Password))
             {
-                user.Password = CommonHelper.ComputeHash(userDto.Password);
+               // user.Password = CommonHelper.ComputeHash(userDto.Password);
             }
 
             await userRepo.Update(user);

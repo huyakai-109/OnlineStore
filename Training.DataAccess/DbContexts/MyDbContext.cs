@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Reflection;
-using System.Reflection.Emit;
 using Training.DataAccess.Configurations;
-using Training.DataAccess.Entities;
+using Tricor.BillingProcess.DataAccess.Configurations;
 
 namespace Training.DataAccess.DbContexts
 {
@@ -16,21 +14,14 @@ namespace Training.DataAccess.DbContexts
             : base(options)
         {
         }
-        public DbSet<User> Users { get; set; }
-        public DbSet<Product> Products { get; set; }
-        public DbSet<ProductImage> ProductImages { get; set; }
-        public DbSet<Category> Categories { get; set; }
-        public DbSet<Stock> Stocks { get; set; }
-        public DbSet<StockEvent> StockEvents { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet<Cart> Carts { get; set; }
-        public DbSet<CartItem> CartItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(builder);
             builder.ApplyConfiguration(new UserConfiguration());
+            builder.ApplyConfiguration(new UserTokenConfiguration());
+            builder.ApplyConfiguration(new UserRoleConfiguration());
+            builder.ApplyConfiguration(new RoleConfiguration());
+            builder.ApplyConfiguration(new RoleClaimConfiguration());
             builder.ApplyConfiguration(new ProductConfiguration());
             builder.ApplyConfiguration(new ProductImageConfiguration());
             builder.ApplyConfiguration(new CategoryConfiguration());

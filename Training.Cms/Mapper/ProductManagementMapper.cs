@@ -13,7 +13,7 @@ namespace Training.Cms.Mapper
         {
             CreateMap<Product, ProductDto>()
                 .ForMember(pd => pd.Category, o => o.MapFrom(p => p.Category.Name))
-                .ForMember(pd => pd.CreatedBy, o => o.MapFrom(p => (p.CreatedByUser.FirstName + " " + p.CreatedByUser.LastName)))
+                //.ForMember(pd => pd.CreatedBy, o => o.MapFrom(p => (p.CreatedByUser.FirstName + " " + p.CreatedByUser.LastName)))
                 .ForMember(d => d.Thumbnail, o => o.MapFrom<ProductUrlResolver>());
 
             CreateMap<ProductDto, Product>();

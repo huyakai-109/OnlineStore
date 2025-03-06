@@ -26,8 +26,8 @@ namespace Training.BusinessLogic.Services.Admin
 
             if (!string.IsNullOrEmpty(search.SearchQuery))
             {
-                query = query.Where(o => o.Customer.FirstName.Contains(search.SearchQuery)
-                                        || o.Customer.LastName.Contains(search.SearchQuery));
+                //query = query.Where(o => o.Customer.FirstName.Contains(search.SearchQuery)
+                //                        || o.Customer.LastName.Contains(search.SearchQuery));
             }
 
             var totalCount = await query.CountAsync();

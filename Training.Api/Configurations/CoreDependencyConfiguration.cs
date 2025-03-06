@@ -19,7 +19,6 @@ namespace Training.Api.Configurations
 
         private static void AddServices(this IServiceCollection collection)
         {
-            collection.AddScoped<IExampleService, ExampleService>();
             collection.AddScoped<ICustomerProductService, ProductService>();
             collection.AddScoped<ICustomerService, CustomerService>();
             collection.AddScoped<ITokenService, TokenService>();

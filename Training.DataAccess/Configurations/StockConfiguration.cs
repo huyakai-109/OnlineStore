@@ -1,10 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Training.DataAccess.Entities;
 
 namespace Training.DataAccess.Configurations
@@ -13,13 +8,11 @@ namespace Training.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<Stock> builder)
         {
-            builder.HasKey(s => s.Id);
-            builder.Property(s => s.Id).ValueGeneratedOnAdd();
-            builder.Property(s => s.Quantity).IsRequired();
-            builder.HasOne(s => s.Product)
-                   .WithMany()
-                   .HasForeignKey(s => s.ProductId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(i => i.Product)
+                   .WithOne()
+                   .HasForeignKey<Stock>(i => i.ProductId);
+
+            builder.HasQueryFilter(i => !i.IsDeleted);
         }
     }
 }

@@ -24,13 +24,6 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Create default admin account
-using (var scope = app.Services.CreateScope())
-{
-    var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-    await userService.CreateDefaultAdminAsync();
-}
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

@@ -11,7 +11,6 @@ using Training.BusinessLogic.Dtos.Base;
 using Training.Common.Helpers;
 using Training.DataAccess.Entities;
 using Training.Repository.UoW;
-using static Training.Common.Constants.Permissions;
 
 namespace Training.BusinessLogic.Services.Admin
 {
@@ -32,21 +31,23 @@ namespace Training.BusinessLogic.Services.Admin
     {
         public async Task<(List<ProductDto> Products, Pagination Pagination)> GetProducts(CommonSearchDto search)
         {
-            var query = await unitOfWork.GetRepository<Product>().QueryAllWithIncludes(p => !p.IsDeleted, disableTracking: true, p => p.Category , p => p.CreatedByUser );
+            //var query = await unitOfWork.GetRepository<Product>().QueryAllWithIncludes(p => !p.IsDeleted, disableTracking: true, p => p.Category , p => p.CreatedByUser );
 
-            if (!string.IsNullOrEmpty(search.SearchQuery))
-            {
-                var searchLower = search.SearchQuery.ToLower();
-                query = query.Where(p => p.Name.ToLower().Contains(searchLower)
-                                      || p.Category.Name.ToLower().Contains(searchLower));
-            }
+            //if (!string.IsNullOrEmpty(search.SearchQuery))
+            //{
+            //    var searchLower = search.SearchQuery.ToLower();
+            //    query = query.Where(p => p.Name.ToLower().Contains(searchLower)
+            //                          || p.Category.Name.ToLower().Contains(searchLower));
+            //}
 
-            var totalCount = await query.CountAsync();
-            var products = await query.Skip((search.Skip - 1) * search.Take).Take(search.Take).ToListAsync();
+            //var totalCount = await query.CountAsync();
+            //var products = await query.Skip((search.Skip - 1) * search.Take).Take(search.Take).ToListAsync();
 
-            var pagination = new Pagination(totalCount, products.Count, search.Skip, search.Take);
+            //var pagination = new Pagination(totalCount, products.Count, search.Skip, search.Take);
 
-            return (mapper.Map<List<ProductDto>>(products), pagination);
+            //return (mapper.Map<List<ProductDto>>(products), pagination);
+
+            throw new NotImplementedException();
         }
         public async Task CreateProduct(ProductDto productDto)
         {

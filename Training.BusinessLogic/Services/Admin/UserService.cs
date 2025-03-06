@@ -18,7 +18,6 @@ namespace Training.BusinessLogic.Services.Admin
     {
         Task<UserDto?> LoginAsync(UserDto userDto);
 		Task SignOutAsync();
-		Task CreateDefaultAdminAsync();
         Task<bool> ChangePasswordAsync(ChangePasswordDto changePasswordDto);
 
         Task<UserDto?> GetProfile(long id);
@@ -37,15 +36,15 @@ namespace Training.BusinessLogic.Services.Admin
                 return null;
             }
 
-            if (user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(userDto.Password), user.Password))
-            {
-                return null;
-            }
+            //if (user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(userDto.Password), user.Password))
+            //{
+            //    return null;
+            //}
 
-            if (user.Role == UserRole.Customer)
-            {
-                return null;
-            }
+            //if (user.Role == UserRole.Customer)
+            //{
+            //    return null;
+            //}
 
             var rs = mapper.Map<UserDto>(user);
             // Sign in the user
@@ -65,42 +64,15 @@ namespace Training.BusinessLogic.Services.Admin
                 return false;   
             }
 
-            if(user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(changePasswordDto.OldPassword), user.Password))
-                return false;  
+            //if(user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(changePasswordDto.OldPassword), user.Password))
+            //    return false;  
 
-            user.Password = CommonHelper.ComputeHash(changePasswordDto.NewPassword);
+            //user.Password = CommonHelper.ComputeHash(changePasswordDto.NewPassword);
 
             await userRepo.Update(user);
             await unitOfWork.SaveChanges();
 
             return true;
-        }
-
-        public async Task CreateDefaultAdminAsync()
-        {
-            var userRepo = unitOfWork.GetRepository<User>();
-            var exists = await userRepo.Any(u => u.Role == UserRole.Admin); 
-
-            if (!exists)
-            {
-                var defaultAdmin = new User
-                {
-                    FirstName = "huy",
-                    LastName = "truong",
-                    CivilianId = "123456789",
-                    Email = "admin@gmail.com",
-                    Password = "12345".ComputeHash(),
-                    PhoneNumber = "123456789",
-                    DateOfBirth = DateTime.UtcNow,
-                    Role = UserRole.Admin,
-                    IsDeleted = false
-                };
-
-                await userRepo.Add(defaultAdmin);
-                await unitOfWork.SaveChanges();
-            }
-
-
         }
 
         public async Task<UserDto?> GetProfile(long userId)

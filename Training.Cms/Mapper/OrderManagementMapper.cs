@@ -10,8 +10,7 @@ namespace Training.Cms.Mapper
     {
         public OrderManagementMapper()
         {
-            CreateMap<Order, OrderDto>()
-                       .ForMember(od => od.CustomerName, o => o.MapFrom(o => o.Customer.FirstName + " " + o.Customer.LastName));
+            CreateMap<Order, OrderDto>();
             CreateMap<OrderDto, Order>();
 
             CreateMap<OrderDto, OrderViewModel>();
