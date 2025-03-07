@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Training.Api.Configurations;
-using Training.BusinessLogic.Services.Admin;
-using Training.Common.Constants;
+﻿using Training.Cms.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +9,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddCoreDependencies(config);
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.AddSecurity(config);
 
 
 var app = builder.Build();

@@ -2,13 +2,11 @@
 
 namespace Training.Api.Models.Requests.Users
 {
-    public class LoginReq
+    public class LogoutReq
     {
-        [MaxLength(100)]
-        public string? Username { get; set; }
+        public string? Token { get; set; }
 
-        [MaxLength(100)]
-        public string? Password { get; set; }
+        public string? RefreshToken { get; set; }
 
         [Required]
         public required Guid DeviceUuid { get; set; }

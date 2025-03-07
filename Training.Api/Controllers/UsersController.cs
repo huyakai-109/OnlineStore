@@ -62,38 +62,6 @@ namespace Training.Api.Controllers
             }
         }
 
-        [HttpPost("login")]
-        [ProducesResponseType(typeof(ResultRes<LoginRes>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResultRes<LoginRes>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ResultRes<LoginRes>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Login([FromBody] LoginReq loginReq)
-        {
-            var response = new ResultRes<LoginRes>();
-
-            try
-            {
-                var (token, user) = await customerService.LoginAsync(Mapper.Map<CustomerDto>(loginReq));
-
-                response.Success = true;
-                response.Result = new LoginRes { Token = token, User = user };
-                return Ok(response);
-            }
-            catch (InvalidOperationException ex)
-            {
-                Logger.LogWarning("Invalid login attempt: {ex}", ex);
-                response.Success = false;
-                response.Error = ex.Message;
-                return Unauthorized(response);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Login unsuccessful: {ex}", ex);
-                response.Success = false;
-                response.Error = "An error occurred while processing your request";
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-        }
-
         [HttpPost("change-password")]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status400BadRequest)]
@@ -133,7 +101,6 @@ namespace Training.Api.Controllers
 
         [HttpGet("profile")]
         [ProducesResponseType(typeof(ResultRes<ProfileRes>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResultRes<ProfileRes>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetProfile()
         {
             var response = new ResultRes<ProfileRes>();

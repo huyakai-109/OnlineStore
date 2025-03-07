@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Training.BusinessLogic.Dtos.Admin;
@@ -10,7 +9,6 @@ using Training.Cms.Models;
 
 namespace Training.Cms.Controllers
 {
-    [Authorize(Policy = "AdminOrClerk")]
     public class ProductManagementController : Controller
     {
         private readonly IProductManagementService _productManagementService;

@@ -6,8 +6,8 @@
 <style>
     .alert-danger, .alert-success {
         max-width: 80%;
-        margin: 0 auto 20px; 
-        text-align: center; 
+        margin: 0 auto 20px;
+        text-align: center;
         padding: 10px 15px;
     }
 </style>
@@ -25,7 +25,7 @@
             if (successAlert) {
                 successAlert.style.display = 'none';
             }
-        }, 1000); 
+        }, 1000);
     </script>
 }
 @* Hiển thị thông báo lỗi nếu có *@
@@ -44,7 +44,7 @@
             if (errorAlert) {
                 errorAlert.style.display = 'none';
             }
-        }, 3000); 
+        }, 3000);
     </script>
 }
 
@@ -55,15 +55,15 @@
                 <h2 class="card-title text-center mb-4">Welcome to Store Management Web! Please login</h2>
                 <form id="account" method="post">
                     <div class="form-floating mb-3">
-                            <input asp-for="Email" class="form-control" placeholder="Email address" autocomplete="username" aria-required="true">
-                            <label asp-for="Email">Email address</label>
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
+                        <input asp-for="UserName" class="form-control" placeholder="User Name" autocomplete="username" aria-required="true">
+                        <label asp-for="UserName">User Name</label>
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
 
                     <div class="form-floating mb-4">
-                            <input asp-for="Password" class="form-control" placeholder="Password" autocomplete="current-password" aria-required="true">
-                            <label asp-for="Password">Password</label>
-                            <span asp-validation-for="Password" class="text-danger"></span>
+                        <input asp-for="Password" class="form-control" placeholder="Password" autocomplete="current-password" aria-required="true">
+                        <label asp-for="Password">Password</label>
+                        <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
                     <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-dark">Log in</button>
                 </form>

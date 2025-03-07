@@ -2,6 +2,8 @@
 {
     public static class GlobalConstants
     {
+        public const string JWTLoginToken = "JWTLoginToken";
+
         public struct UserToken
         {
             public const string LoginProvider = "Self-hosted";

@@ -1,17 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Training.DataAccess.Configurations;
-using Tricor.BillingProcess.DataAccess.Configurations;
+using Training.DataAccess.Entities;
 
 namespace Training.DataAccess.DbContexts
 {
-    public class MyDbContext : DbContext
+    public class MyDbContext : IdentityDbContext<User, Role, long, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
     {
         public MyDbContext()
         {
         }
-
-        public MyDbContext(DbContextOptions options)
-            : base(options)
+        public MyDbContext(DbContextOptions<MyDbContext> options)
+              : base(options)
         {
         }
 
@@ -22,6 +22,9 @@ namespace Training.DataAccess.DbContexts
             builder.ApplyConfiguration(new UserRoleConfiguration());
             builder.ApplyConfiguration(new RoleConfiguration());
             builder.ApplyConfiguration(new RoleClaimConfiguration());
+            builder.ApplyConfiguration(new UserLoginConfiguration());
+            builder.ApplyConfiguration(new UserClaimConfiguration());
+            builder.ApplyConfiguration(new EmployeeConfiguration());
             builder.ApplyConfiguration(new ProductConfiguration());
             builder.ApplyConfiguration(new ProductImageConfiguration());
             builder.ApplyConfiguration(new CategoryConfiguration());

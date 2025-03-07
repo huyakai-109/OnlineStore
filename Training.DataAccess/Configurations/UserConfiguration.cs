@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Training.Common.Constants;
 using Training.DataAccess.Entities;
 
-namespace Tricor.BillingProcess.DataAccess.Configurations
+namespace Training.DataAccess.Configurations
 {
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
