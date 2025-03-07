@@ -1,4 +1,4 @@
-using Training.Cms.Configurations;
+﻿using Training.Cms.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 

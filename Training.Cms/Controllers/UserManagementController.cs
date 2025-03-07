@@ -11,7 +11,6 @@ using Training.Common.Constants;
 
 namespace Training.Cms.Controllers
 {
-    [Authorize(Policy = "Admin")]
     public class UserManagementController : Controller
     {
         private readonly IUserManagementService _userManagementService;
@@ -24,6 +23,8 @@ namespace Training.Cms.Controllers
             _mapper = mapper;
             _logger = logger;
         }
+
+        [Authorize(Policy = Permissions.User.ViewUsers)]
         public async Task<IActionResult> Index([FromQuery] CommonSearchViewModel search)
         {
             var (users, pagination) = await _userManagementService.GetUsers(_mapper.Map<CommonSearchDto>(search));
@@ -35,7 +36,9 @@ namespace Training.Cms.Controllers
             
             return View(userList);
         }
+
         [HttpPost]
+        [Authorize(Policy = Permissions.User.ManageUsers)]
         public async Task<IActionResult> Create(UserViewModel userViewModel)
         {
             //_logger.LogInformation($"Received user: {JsonConvert.SerializeObject(userViewModel)}");
@@ -57,7 +60,9 @@ namespace Training.Cms.Controllers
 
             return RedirectToAction("Index");
         }
-        [HttpGet]
+
+        [HttpPut]
+        [Authorize(Policy = Permissions.User.ManageUsers)]
         public async Task<IActionResult> Edit(long id)
         {
             var user = await _userManagementService.GetUserById(id);
@@ -70,7 +75,8 @@ namespace Training.Cms.Controllers
             return PartialView("Edit", userVM);
         }
 
-        [HttpPost]
+        [HttpPut]
+        [Authorize(Policy = Permissions.User.ManageUsers)]
         public async Task<IActionResult> Edit(long id, UserViewModel model)
         {
             if (id != model.Id)
@@ -98,7 +104,8 @@ namespace Training.Cms.Controllers
             return View(model);
         }
 
-        [HttpPost]
+        [HttpDelete]
+        [Authorize(Policy = Permissions.User.ManageUsers)]
         public async Task<IActionResult> Delete(long id)
         {
             await _userManagementService.DeleteUser(id); 

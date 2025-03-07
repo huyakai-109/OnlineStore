@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Training.Common.Constants;
@@ -18,21 +19,13 @@ namespace Training.Cms.Configurations
                 })
                 .AddEntityFrameworkStores<MyDbContext>();
 
-            collection.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidAudience = configuration.GetSection(ConfigKeys.Security.Jwt.Audience).Get<string>(),
-                        ValidIssuer = configuration.GetSection(ConfigKeys.Security.Jwt.Issuer).Get<string>(),
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration[ConfigKeys.Security.Jwt.Secret]!)),
-                        ClockSkew = TimeSpan.Zero,
-                    };
-                });
+            collection.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                   .AddCookie(options =>
+                   {
+                       options.LoginPath = "/Account/Login";
+                       options.AccessDeniedPath = "/Account/AccessDenied";
+                       options.Cookie.HttpOnly = true;
+                   });
 
             collection.AddAuthorization(options =>
             {

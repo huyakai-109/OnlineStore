@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Training.BusinessLogic.Dtos.Admin;
+using Training.BusinessLogic.Dtos.Auth;
 using Training.Cms.Models;
 using Training.DataAccess.Entities;
 

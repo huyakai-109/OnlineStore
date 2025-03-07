@@ -23,7 +23,6 @@ namespace Training.Cms.Configurations
             collection.AddScoped<IStockEventManagementService, StockEventManagementService>();
             collection.AddScoped<IOrderManagementService, OrderManagementService>();
             collection.AddScoped<IReportService, ReportService>();
-            
         }
     }
 }

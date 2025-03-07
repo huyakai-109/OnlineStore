@@ -7,7 +7,6 @@ using Training.Cms.Models;
 
 namespace Training.Cms.Controllers
 {
-    [Authorize(Policy = "AdminOrClerk")]
     public class StockEventManagementController : Controller
     {
         private readonly IStockEventManagementService _stockEventManagementService;

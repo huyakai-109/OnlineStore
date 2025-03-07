@@ -1,16 +1,15 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Training.BusinessLogic.Dtos.Admin;
 using Training.BusinessLogic.Dtos.Base;
 using Training.BusinessLogic.Services.Admin;
 using Training.Cms.Models;
+using Training.Common.Constants;
 
 namespace Training.Cms.Controllers
 {
-    [Authorize(Policy = "AdminOrClerk")]
     public class CategoryManagementController : Controller
     {
         private readonly ICategoryManagementService _categoryManagementService;
@@ -25,6 +24,7 @@ namespace Training.Cms.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
+        [Authorize(Policy = Permissions.Categories.ViewCategories)]
         public async Task<IActionResult> Index([FromQuery] CommonSearchViewModel search)
         {
             var (categories, pagination) = await _categoryManagementService.GetCategories(_mapper.Map<CommonSearchDto>(search));
@@ -36,7 +36,9 @@ namespace Training.Cms.Controllers
 
             return View(categoryList);
         }
+
         [HttpPost]
+        [Authorize(Policy = Permissions.Categories.ManageCategories)]
         public async Task<IActionResult> Create(CategoryViewModel categoryViewModel)
         {
             if (!ModelState.IsValid)
@@ -74,7 +76,8 @@ namespace Training.Cms.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpGet]
+        [HttpPut]
+        [Authorize(Policy = Permissions.Categories.ManageCategories)]
         public async Task<IActionResult> Edit(long id)
         {
             var category = await _categoryManagementService.GetCategoryById(id);
@@ -86,7 +89,9 @@ namespace Training.Cms.Controllers
             var categoryVM = _mapper.Map<CategoryViewModel>(category);
             return PartialView("Edit", categoryVM);
         }
-        [HttpPost]
+
+        [HttpPut]
+        [Authorize(Policy = Permissions.Categories.ManageCategories)]
         public async Task<IActionResult> Edit(long id, CategoryViewModel model)
         {
             if (id != model.Id)
@@ -126,7 +131,8 @@ namespace Training.Cms.Controllers
             return View(model);
         }
 
-        [HttpPost]
+        [HttpDelete]
+        [Authorize(Policy = Permissions.Categories.ManageCategories)]
         public async Task<IActionResult> Delete(long id)
         {
             await _categoryManagementService.DeleteCategory(id);

@@ -137,6 +137,7 @@ namespace Training.BusinessLogic.Services
 
             loginResult.Token = token;
             loginResult.RefreshToken = refreshToken;
+            loginResult.IsAdmin = user.IsAdmin;
             return (string.Empty, loginResult);
         }
 

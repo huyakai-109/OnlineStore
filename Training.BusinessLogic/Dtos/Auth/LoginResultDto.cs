@@ -9,5 +9,7 @@
         public int AccessFailedCount { get; set; }
 
         public DateTime? LockoutEnd { get; set; }
+
+        public bool IsAdmin { get; set; }
     }
 }

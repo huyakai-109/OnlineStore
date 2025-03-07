@@ -10,7 +10,6 @@ using Training.Common.EnumTypes;
 
 namespace Training.Cms.Controllers
 {
-    [Authorize(Policy = "AdminOrClerk")]
     public class StockManagementController : Controller
     {
         private readonly IStockManagementService _stockManagementService;
