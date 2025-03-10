@@ -11,6 +11,7 @@ namespace Training.Api.Mappers
         public UserMapper()
         {
             CreateMap<RegisterReq, CustomerDto>();
+            CreateMap<Customer, CustomerDto>();
             CreateMap<CustomerDto, User>().ReverseMap();
             CreateMap<CustomerDto, ProfileRes>();
             CreateMap<ChangePasswordReq, ChangePasswordDto>();

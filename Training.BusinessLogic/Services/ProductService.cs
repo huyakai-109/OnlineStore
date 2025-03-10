@@ -75,7 +75,7 @@ namespace Training.BusinessLogic.Services
 
         public async Task<bool> AddToCartAsync(AddToCartDto addToCartDto)
         {
-            using var transaction = await unitOfWork.BeginTransactionAsync();
+            using var transaction = await unitOfWork.DbContext.Database.BeginTransactionAsync();
 
             try
             {

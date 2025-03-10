@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Storage;
 using Training.Common.Helpers;
 using Training.DataAccess.DbContexts;
 using Training.DataAccess.IEntities;
@@ -9,27 +8,31 @@ using Training.Repository.Repositories;
 
 namespace Training.Repository.UoW
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
         Task<int> SaveChanges();
 
         IBaseRepository<TEntity> GetRepository<TEntity>()
             where TEntity : class;
-        Task<IDbContextTransaction> BeginTransactionAsync();
 
-        //  IExampleRepository ExampleRepository { get; }
-        //  IProductRepository ProductRepository { get; }   
+        MyDbContext DbContext { get; }
     }
 
-    public class UnitOfWork(
-        MyDbContext context,
-        IHttpContextAccessor httpContextAccessor) : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
-        private readonly MyDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
-        private readonly Dictionary<Type, object> _repositories = new();
+        private readonly MyDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly Dictionary<Type, object> _repositories;
 
-       // public IExampleRepository ExampleRepository => new ExampleRepository(_context);
-        //public IProductRepository ProductRepository => new ProductRepository(_context); 
+        public UnitOfWork(MyDbContext context, IHttpContextAccessor httpContextAccessor)
+        {
+            this._context = context ?? throw new ArgumentNullException(nameof(context));
+            this._repositories = new();
+            this.DbContext = this._context;
+            this._httpContextAccessor = httpContextAccessor;
+        }
+
+        public MyDbContext DbContext { get; private set; }
 
         public IBaseRepository<TEntity> GetRepository<TEntity>()
             where TEntity : class
@@ -44,10 +47,6 @@ namespace Training.Repository.UoW
 
             return (IBaseRepository<TEntity>)value;
         }
-        public async Task<IDbContextTransaction> BeginTransactionAsync()
-        {
-            return await _context.Database.BeginTransactionAsync();
-        }
 
         public async Task<int> SaveChanges()
         {
@@ -56,10 +55,16 @@ namespace Training.Repository.UoW
             return await _context.SaveChangesAsync();
         }
 
+        public void Dispose()
+        {
+            this._context?.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
         private void SaveChangesInternal()
         {
             var entries = _context.ChangeTracker.Entries()
-                .Where(x => x.State is EntityState.Added or EntityState.Modified)
+                .Where(x => x.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
                 .ToArray();
             if (entries.Length == 0) return;
 
@@ -102,7 +107,7 @@ namespace Training.Repository.UoW
                     propertyEntry = item.Properties.FirstOrDefault(p => p.Metadata.Name == "CreatedBy");
                     if (propertyEntry != null)
                     {
-                        propertyEntry.CurrentValue = httpContextAccessor.HttpContext?.User.Claims.GetUserIdNullable() ?? 0;
+                        propertyEntry.CurrentValue = _httpContextAccessor.HttpContext?.User.Claims.GetUserIdNullable() ?? 0;
                     }
 
                     // CreatedAt
@@ -118,7 +123,7 @@ namespace Training.Repository.UoW
                 propertyEntry = item.Properties.FirstOrDefault(p => p.Metadata.Name == "UpdatedBy");
                 if (propertyEntry != null)
                 {
-                    propertyEntry.CurrentValue = httpContextAccessor.HttpContext?.User.Claims.GetUserIdNullable() ?? 0;
+                    propertyEntry.CurrentValue = _httpContextAccessor.HttpContext?.User.Claims.GetUserIdNullable() ?? 0;
                 }
 
                 // UpdatedAt
@@ -152,7 +157,7 @@ namespace Training.Repository.UoW
 
                 if (item.Entity is not IBaseEntity baseEntity) continue;
 
-                baseEntity.UpdatedBy = httpContextAccessor.HttpContext?.User.Claims.GetUserIdNullable() ?? 0;
+                baseEntity.UpdatedBy = _httpContextAccessor.HttpContext?.User.Claims.GetUserIdNullable() ?? 0;
                 baseEntity.UpdatedAt = DateTimeHelper.GetDtOffset();
             }
         }

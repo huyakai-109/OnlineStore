@@ -25,6 +25,7 @@ namespace Training.DataAccess.DbContexts
             builder.ApplyConfiguration(new UserLoginConfiguration());
             builder.ApplyConfiguration(new UserClaimConfiguration());
             builder.ApplyConfiguration(new EmployeeConfiguration());
+            builder.ApplyConfiguration(new CustomerConfiguration());
             builder.ApplyConfiguration(new ProductConfiguration());
             builder.ApplyConfiguration(new ProductImageConfiguration());
             builder.ApplyConfiguration(new CategoryConfiguration());

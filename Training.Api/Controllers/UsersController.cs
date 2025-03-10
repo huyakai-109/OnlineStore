@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Training.Api.Models.Requests.Users;
 using Training.Api.Models.Responses.Base;
 using Training.Api.Models.Responses.Users;
@@ -19,7 +17,6 @@ namespace Training.Api.Controllers
     {
         [HttpPost("register")]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterReq registerRequest)
         {
             var response = new ResultRes<bool>();
@@ -48,55 +45,57 @@ namespace Training.Api.Controllers
                     return BadRequest(response);
                 }
             }
-            catch (ArgumentNullException ex)
-            {
-                Logger.LogWarning("Registration failed due to null value: {ex}", ex);
-                response.Error = ex.Message;
-                return BadRequest(response);
-            }
             catch (Exception ex)
             {
-                Logger.LogError("Registration unsuccessful: {ex}", ex);
-                response.Error = "An error occurred while processing your request";
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
+                response.Error = "Register customer failed";
+                Logger.LogError("Register customer failed: {ex}", ex);
+                return InternalServerError(response);
             }
         }
 
         [HttpPost("change-password")]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordReq changePasswordReq)
         {
             var response = new ResultRes<bool>();
-            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
 
-            if (string.IsNullOrEmpty(userId) || !long.TryParse(userId, out var userIdLong))
+            try
             {
-                response.Error = "User ID not found or token has expired.";
-                return Unauthorized(response);
-            }
+                var userId = this.User.Claims.GetUserId();
 
-            if (changePasswordReq.NewPassword != changePasswordReq.RepeatNewPassword)
+                if (string.IsNullOrEmpty(userId.ToString()))
+                {
+                    response.Error = "User ID not found or token has expired.";
+                    return Unauthorized(response);
+                }
+
+                if (changePasswordReq.NewPassword != changePasswordReq.RepeatNewPassword)
+                {
+                    response.Error = "New passwords do not match";
+                    return BadRequest(response);
+                }
+
+                var changePasswordDto = Mapper.Map<ChangePasswordDto>(changePasswordReq);
+                changePasswordDto.Id = userId;
+
+                var result = await customerService.ChangePasswordAsync(changePasswordDto);
+
+                if (!result)
+                {
+                    response.Error = "Invalid old password";
+                    return BadRequest(response);
+                }
+
+                response.Success = true;
+                response.Result = true;
+                return Ok(response);
+            }
+            catch(Exception ex)
             {
-                response.Error = "New passwords do not match";
-                return BadRequest(response);
+                response.Error = "An error occurred while changing password";
+                logger.LogError(ex, "An error occurred while changing password");
+                return InternalServerError(response);
             }
-
-            var changePasswordDto = Mapper.Map<ChangePasswordDto>(changePasswordReq);
-            changePasswordDto.Id = userIdLong;
-
-            var result = await customerService.ChangePasswordAsync(changePasswordDto);
-
-            if (!result)
-            {
-                response.Error = "Invalid old password";
-                return BadRequest(response);
-            }
-
-            response.Success = true;
-            response.Result = true;
-            return Ok(response);
         }
 
         [HttpGet("profile")]
@@ -107,16 +106,15 @@ namespace Training.Api.Controllers
 
             try
             {
-              
-                var userIdClaim = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+                var userId = this.User.Claims.GetUserId();
 
-                if (userIdClaim == null)
+                if (string.IsNullOrEmpty(userId.ToString()))
                 {
                     response.Error = "User ID not found or token has expired.";
                     return Unauthorized(response);
                 }
 
-                var customerDto = await customerService.GetProfileAsync(long.Parse(userIdClaim));
+                var customerDto = await customerService.GetProfileAsync(userId);
 
                 if (customerDto != null)
                 {
@@ -132,14 +130,12 @@ namespace Training.Api.Controllers
             }
             catch (Exception ex)
             {
+                response.Error = "An error occurred while retrieving the profile";
                 logger.LogError(ex, "An error occurred while retrieving the profile.");
-                response.Error = ex.Message;
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
+                return InternalServerError(response);
             }
-
         }
     }
-
 }
 
 
