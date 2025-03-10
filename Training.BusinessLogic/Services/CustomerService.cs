@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Training.BusinessLogic.Dtos.Customers;
+using Training.Common.Constants;
 using Training.Common.Helpers;
 using Training.DataAccess.Entities;
 using Training.Repository.UoW;
@@ -9,7 +12,6 @@ namespace Training.BusinessLogic.Services
     public interface ICustomerService
     {
         Task<bool> RegisterCustomer(CustomerDto customerDto);
-        Task<(string token, CustomerDto customerDto)> LoginAsync(CustomerDto customerDto);
 
         Task<bool> ChangePasswordAsync(ChangePasswordDto changePasswordDto);
 
@@ -17,93 +19,102 @@ namespace Training.BusinessLogic.Services
     }
     public class CustomerService(
         IMapper mapper,
-        ITokenService tokenService,
+        UserManager<User> userManager,
         IUnitOfWork unitOfWork) : ICustomerService
     {
         public async Task<bool> RegisterCustomer(CustomerDto customerDto)
         {
-           
-            if (customerDto.Password == null)
-            {
-                throw new ArgumentNullException(nameof(customerDto.Password), "Password cannot be null.");
-            }
+            var customerRepo = unitOfWork.GetRepository<Customer>();
+            var userRepo = unitOfWork.GetRepository<User>();
+            var userRoleRepo = unitOfWork.GetRepository<UserRole>();
 
-            var customerRepo = unitOfWork.GetRepository<User>();
-
-            // Check if the email already exists
             if (await customerRepo.Any(c => c.Email == customerDto.Email))
             {
-                return false; 
+                return false;
             }
 
-            var user = mapper.Map<User>(customerDto);
-            //user.Password = CommonHelper.ComputeHash(customerDto.Password);
-            //user.Role = UserRole.Customer;
-            
-            await customerRepo.Add(user);
-            await unitOfWork.SaveChanges();
-
-            return true; 
-        }
-
-        public async Task<(string token, CustomerDto customerDto)> LoginAsync(CustomerDto customerDto)
-        {
-            if (customerDto.Password == null)
+            var strategy = unitOfWork.DbContext.Database.CreateExecutionStrategy();
+            await strategy.ExecuteAsync(async () =>
             {
-                throw new InvalidOperationException("Password cannot be null.");
-            }
+                await using var transaction = await unitOfWork.DbContext.Database.BeginTransactionAsync();
+                try
+                {
+                    var customer = new Customer()
+                    {
+                        Email = customerDto.Email,
+                        FirstName = customerDto.FirstName,
+                        LastName = customerDto.LastName,
+                        PhoneNumber = customerDto.PhoneNumber,
+                        DateOfBirth = customerDto.DateOfBirth,
+                        User = new User()
+                        {
+                            Email = customerDto.Email,
+                            NormalizedEmail = customerDto.Email,
+                            UserName = customerDto.Email,
+                            NormalizedUserName = customerDto.Email,
+                            SecurityStamp = Guid.NewGuid().ToString(),
+                            UserRoles = new List<UserRole>()
+                            {
+                                new UserRole()
+                                {
+                                    RoleId = RolePolicies.Customer.Id,
+                                }
+                            },
+                            PasswordHash = customerDto.Password!.HashPassword(),
+                            IsActive = true,
+                            LockoutEnabled = true,
+                        }
+                    };
 
-            try
-            {
-                var customerRepo = unitOfWork.GetRepository<User>();
+                    if(customerDto.Avatar !=null && customerDto.Avatar.Length > 0)
+                    {
+                        // code when config minIO is done
+                    }
 
-                var user = await customerRepo.Single(c => c.Email == customerDto.Email);
-
-                //if (user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(customerDto.Password), user.Password))
-                //{
-                //    throw new InvalidOperationException("Invalid email or password.");
-                //}
-
-                var userDto = mapper.Map<CustomerDto>(user);
-                var token = tokenService.GenerateToken(userDto);
-
-                return (token, userDto);
-            }
-            catch (InvalidOperationException)
-            {
-                throw;
-            }
-        }
-
-
-        public async Task<bool> ChangePasswordAsync(ChangePasswordDto changePasswordDto)
-        {
-            var userRepo = unitOfWork.GetRepository<User>();
-            var user = await userRepo.Single(u => u.Id == changePasswordDto.Id);
-
-            //if (!string.IsNullOrEmpty(changePasswordDto.OldPassword) && !string.IsNullOrEmpty(changePasswordDto.NewPassword))
-            //{
-            //    if (user == null || !CommonHelper.CompareHash(CommonHelper.ComputeHash(changePasswordDto.OldPassword), user.Password))
-            //    {
-            //        return false;
-            //    }
-
-            //    user.Password = CommonHelper.ComputeHash(changePasswordDto.NewPassword);
-
-            //    await userRepo.Update(user);
-            //}
-            await unitOfWork.SaveChanges();
+                    await customerRepo.Add(customer);
+                    await unitOfWork.SaveChanges();
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    if(transaction != null)
+                    {
+                        await transaction.RollbackAsync();
+                    }
+                }
+                finally
+                {
+                    unitOfWork.Dispose();
+                }
+            });
 
             return true;
         }
 
+        public async Task<bool> ChangePasswordAsync(ChangePasswordDto changePasswordDto)
+        {
+            var user = await userManager.FindByIdAsync(changePasswordDto.Id.ToString());
+            if (user == null)
+            {
+                return false;
+            }
+
+            var result = await userManager.ChangePasswordAsync(user, changePasswordDto.OldPassword!, changePasswordDto.NewPassword!);
+
+            return result.Succeeded;
+        }
+
         public async Task<CustomerDto?> GetProfileAsync(long userId)
         {
-           var user = await unitOfWork.GetRepository<User>().FindById(userId);
+            var customer = await (from us in await unitOfWork.GetRepository<User>().QueryAll()
+                           join cus in await unitOfWork.GetRepository<Customer>().QueryAll()
+                           on us.Id equals cus.UserId
+                           where us.Id == userId
+                           select cus).FirstOrDefaultAsync();
 
-            if (user == null) return null;
+            if (customer == null) return null;
 
-            return mapper.Map<CustomerDto>(user);
+            return mapper.Map<CustomerDto>(customer);
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Training.BusinessLogic.Services
 
         public async Task<bool> EditQuantity(EditCartQuantityDto editCartQuantityDto)
         {
-            using var transaction = await unitOfWork.BeginTransactionAsync();
+            using var transaction = await unitOfWork.DbContext.Database.BeginTransactionAsync();
 
             try
             {
@@ -90,7 +90,7 @@ namespace Training.BusinessLogic.Services
         public async Task<bool> RemoveProduct(RemoveProductFCartDto removeProductFCartDto)
         {
 
-            using var transaction = await unitOfWork.BeginTransactionAsync();
+            using var transaction = await unitOfWork.DbContext.Database.BeginTransactionAsync();
 
             try
             {
