@@ -55,14 +55,18 @@ namespace Training.Cms.Controllers
                 //}
                 return View("Index", userViewModel);
             }
+
+            long roleId = (long)userViewModel.Role;
+
             var userDto = _mapper.Map<UserDto>(userViewModel);
+            userDto.RoleIds = new long[] { roleId };
             await _userManagementService.CreateUser(userDto);
 
             return RedirectToAction("Index");
         }
 
-        [HttpPut]
-        [Authorize(Policy = Permissions.User.ManageUsers)]
+        [HttpGet]
+        [Authorize(Policy = Permissions.User.ViewUsers)]
         public async Task<IActionResult> Edit(long id)
         {
             var user = await _userManagementService.GetUserById(id);
@@ -75,9 +79,9 @@ namespace Training.Cms.Controllers
             return PartialView("Edit", userVM);
         }
 
-        [HttpPut]
+        [HttpPost]
         [Authorize(Policy = Permissions.User.ManageUsers)]
-        public async Task<IActionResult> Edit(long id, UserViewModel model)
+        public async Task<IActionResult> Edit(long id, UserViewModel model) 
         {
             if (id != model.Id)
             {
@@ -88,8 +92,10 @@ namespace Training.Cms.Controllers
             {
                 try
                 {
-                    var user = _mapper.Map<UserDto>(model);
-                    var result = await _userManagementService.UpdateUser(user);
+                    long roleId = (long)model.Role;
+                    var userDto = _mapper.Map<UserDto>(model);
+                    userDto.RoleIds = new long[] { roleId };
+                    var result = await _userManagementService.UpdateUser(userDto);
 
                     if (result) return RedirectToAction(nameof(Index));
                 }

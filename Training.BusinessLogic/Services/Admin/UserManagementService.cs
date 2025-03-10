@@ -1,17 +1,12 @@
 ﻿using AutoMapper;
 using CsvHelper;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Training.BusinessLogic.Common;
 using Training.BusinessLogic.Dtos.Admin;
 using Training.BusinessLogic.Dtos.Base;
-using Training.BusinessLogic.Dtos.Customers;
-using Training.Common.EnumTypes;
 using Training.Common.Helpers;
 using Training.DataAccess.Entities;
 using Training.Repository.UoW;
@@ -25,31 +20,72 @@ namespace Training.BusinessLogic.Services.Admin
         Task CreateUser(UserDto userDto);
 
         Task<UserDto?> GetUserById(long id);
+
         Task<bool> UpdateUser(UserDto userDto);
+
         Task DeleteUser(long Id);
 
         byte[] ExportUsersToCsv(List<UserDto> users);
-        Task<List<UserDto>> GetAllUsers();
 
+        Task<List<UserDto>> GetAllUsers();
     }
     public class UserManagementService(IMapper mapper,
         IUnitOfWork unitOfWork) : IUserManagementService
     {
         public async Task CreateUser(UserDto userDto)
         {
-            var user = mapper.Map<User>(userDto);
-            if(!string.IsNullOrEmpty(userDto.Password))
+            var employeeRepo = unitOfWork.GetRepository<Employee>();
+
+            /*var isExistEmail = await unitOfWork.GetRepository<User>().Any(i => i.Email == userDto.UserName);
+
+             add Validate role in the future 
+           
+                var existedRole = (await unitOfWork.GetRepository<Role>()
+                .QueryCondition(i => requestDto.RoleIds.Contains(i.Id)))
+                .Select(i => i.Id)
+                .ToArray();
+            if (requestDto.RoleIds.Except(existedRole).Any())
             {
-               // user.Password = CommonHelper.ComputeHash(userDto.Password);
-                user.CreatedAt = DateTime.UtcNow;
+                
             }
-            await unitOfWork.GetRepository<User>().Add(user);
+             */
+
+            var userRoles = new List<DataAccess.Entities.UserRole>();
+            foreach (var roleId in userDto.RoleIds!)
+            {
+                userRoles.Add(new DataAccess.Entities.UserRole()
+                {
+                    RoleId = roleId
+                });
+            }
+
+            var employee = new Employee()
+            {
+                FirstName = userDto.FirstName,
+                LastName = userDto.LastName,
+                PhoneNumber = userDto.PhoneNumber,
+                DateOfBirth = userDto.DateOfBirth,
+                User = new User()
+                {
+                    Email = userDto.Email,
+                    NormalizedEmail = userDto.Email,
+                    UserName = userDto.Email,
+                    NormalizedUserName = userDto.Email,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    UserRoles = userRoles,
+                    PasswordHash = userDto.Password!.ComputeHash(),
+                    IsActive = true,
+                    LockoutEnabled = true,
+                }
+            };
+
+            await unitOfWork.GetRepository<Employee>().Add(employee);
             await unitOfWork.SaveChanges();
         }
 
         public async Task DeleteUser(long Id)
         {
-            var userRepo = unitOfWork.GetRepository<User>();
+            var userRepo = unitOfWork.GetRepository<Employee>();
             var user = await userRepo.Single(u => u.Id == Id);
 
             if (user == null)
@@ -83,25 +119,57 @@ namespace Training.BusinessLogic.Services.Admin
 
         public async Task<UserDto?> GetUserById(long id)
         {
-            var user = await unitOfWork.GetRepository<User>().FindById(id);
-            if (user == null) return null;
+            var employee = await (from emp in await unitOfWork.GetRepository<Employee>().QueryAll()
+                                  join us in await unitOfWork.GetRepository<User>().QueryAll()
+                                  on emp.UserId equals us.Id
+                                  join ur in await unitOfWork.GetRepository<UserRole>().QueryAll()
+                                  on us.Id equals ur.UserId
+                                  join r in await unitOfWork.GetRepository<Role>().QueryAll()
+                                  on ur.RoleId equals r.Id
+                                  where emp.Id == id
+                                  select new UserDto()
+                                  {
+                                      Id = emp.Id,
+                                      FirstName = emp.FirstName,
+                                      LastName = emp.LastName,
+                                      Email = us.Email,
+                                      PhoneNumber = emp.PhoneNumber,
+                                      RoleName = r.DisplayName,
+                                  }).FirstOrDefaultAsync();
+            if(employee == null)
+            {
+                return null;
+            }
 
-            return mapper.Map<UserDto>(user);
+            return employee;
         }
 
         public async Task<(List<UserDto> Users, Pagination Pagination)> GetUsers(CommonSearchDto search)
         {
-            var query = await unitOfWork.GetRepository<User>().QueryCondition(u => !u.IsDeleted);
+            var query = from emp in await unitOfWork.GetRepository<Employee>().QueryAll()
+                        join us in await unitOfWork.GetRepository<User>().QueryAll()
+                        on emp.UserId equals us.Id
+                        join ur in await unitOfWork.GetRepository<UserRole>().QueryAll()
+                        on us.Id equals ur.UserId
+                        join r in await unitOfWork.GetRepository<Role>().QueryAll()
+                        on ur.RoleId equals r.Id
+                        select new UserDto()
+                        {
+                            Id = emp.Id,
+                            FirstName = emp.FirstName,
+                            LastName = emp.LastName,
+                            Email = us.Email,
+                            PhoneNumber = emp.PhoneNumber,
+                            RoleName = r.DisplayName,
+                        };
 
             if (!string.IsNullOrEmpty(search.SearchQuery))
             {
-                //UserRole? roleEnum = EnumHelper<UserRole>.ToEnum(search.SearchQuery);
-                    
-                //var searchLower = search.SearchQuery.ToLower();
-                //query = query.Where(u => u.FirstName.ToLower() == searchLower
-                //                      || u.LastName.ToLower() == searchLower
-                //                      || u.Email.ToLower() == searchLower
-                //                      || (roleEnum.HasValue && u.Role == roleEnum.Value));
+
+                var searchLower = search.SearchQuery.ToLower();
+                query = query.Where(u => u.FirstName!.ToLower() == searchLower
+                                      || u.LastName!.ToLower() == searchLower
+                                      || u.Email!.ToLower() == searchLower);
 
             }
 
@@ -115,32 +183,50 @@ namespace Training.BusinessLogic.Services.Admin
 
         public async Task<bool> UpdateUser(UserDto userDto)
         {
+            var employeeRepo = unitOfWork.GetRepository<Employee>();
             var userRepo = unitOfWork.GetRepository<User>();
-            var user = await userRepo.Single(u => u.Id == userDto.Id);
-            if (user == null) 
-            { 
-                return false; 
-            }
+            var userRoleRepo = unitOfWork.GetRepository<UserRole>();
 
-            //user.FirstName = userDto.FirstName;
-            //user.LastName = userDto.LastName;
-            //user.Email = userDto.Email;
-            //user.Role = userDto.Role;
-            //user.CivilianId = userDto.CivilianId;
-            //user.DateOfBirth = userDto.DateOfBirth;
-            //user.PhoneNumber = userDto.PhoneNumber;
-
-            if (!string.IsNullOrEmpty(userDto.Password))
+            var employee = await employeeRepo.Single(u => u.Id == userDto.Id);
+            if (employee == null)
             {
-               // user.Password = CommonHelper.ComputeHash(userDto.Password);
+                return false;
             }
+
+            var user = await userRepo.Single(u => u.Id == employee.UserId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            var roles = (await userRoleRepo.QueryCondition(i => i.UserId == user.Id)).ToArray();
+            if (roles.Length > 0)
+            {
+                await userRoleRepo.Delete(roles);
+            }
+
+            if (userDto.RoleIds!.Length > 0)
+            {
+                var newRole = userDto.RoleIds.Select(i => new UserRole()
+                {
+                    UserId = user.Id,
+                    RoleId = i
+                });
+
+                await userRoleRepo.Add(newRole);
+            }
+
+            employee.FirstName = userDto.FirstName;
+            employee.LastName = userDto.LastName;
+            employee.DateOfBirth = userDto.DateOfBirth;
+            employee.PhoneNumber = userDto.PhoneNumber;
+            user.Email = userDto.Email;
 
             await userRepo.Update(user);
+            await employeeRepo.Update(employee);
             await unitOfWork.SaveChanges();
 
             return true;
-
-
         }
     }
 }

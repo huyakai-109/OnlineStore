@@ -6,6 +6,7 @@ namespace Training.Cms.Models
     public class UserViewModel
     {
         public long Id { get; set; }
+
         [Required(ErrorMessage = "The First Name field is required.")]
         [StringLength(50)]
         [Display(Name = "First Name")]
@@ -15,9 +16,6 @@ namespace Training.Cms.Models
         [StringLength(50)]
         [Display(Name = "Last Name")]
         public string? LastName { get; set; }
-
-        [StringLength(12)]
-        public string? CivilianId { get; set; }
 
         [Required]
         [EmailAddress]
@@ -29,6 +27,8 @@ namespace Training.Cms.Models
 
         [Required]
         public UserRole Role { get; set; }
+
+        public string? RoleName {  get; set; }
 
         [Required]
         [DataType(DataType.Date)]
