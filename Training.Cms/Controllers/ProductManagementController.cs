@@ -6,6 +6,7 @@ using Training.BusinessLogic.Dtos.Admin;
 using Training.BusinessLogic.Dtos.Base;
 using Training.BusinessLogic.Services.Admin;
 using Training.Cms.Models;
+using Training.Common.Constants;
 
 namespace Training.Cms.Controllers
 {
@@ -22,6 +23,8 @@ namespace Training.Cms.Controllers
             _logger = logger;
             _webHostEnvironment = webHostEnvironment;
         }
+
+        [Authorize(Policy = Permissions.Categories.ViewCategories)]
         public async Task<IActionResult> Index([FromQuery] CommonSearchViewModel search)
         {
             var (products, pagination) = await _productManagementService.GetProducts(_mapper.Map<CommonSearchDto>(search));
@@ -32,7 +35,9 @@ namespace Training.Cms.Controllers
             };
             return View(productList);
         }
+
         [HttpGet]
+        [Authorize(Policy = Permissions.Products.ManageProducts)]
         public async Task<IActionResult> Create()
         {
             var categories = await _productManagementService.GetCategories();
@@ -43,7 +48,9 @@ namespace Training.Cms.Controllers
 
             return PartialView("Create", model); 
         }
+
         [HttpPost]
+        [Authorize(Policy = Permissions.Products.ManageProducts)]
         public async Task<IActionResult> Create(ProductViewModel productViewModel)
         {
             if (!ModelState.IsValid)
@@ -55,7 +62,9 @@ namespace Training.Cms.Controllers
 
             return RedirectToAction("Index");
         }
+
         [HttpGet]
+        [Authorize(Policy = Permissions.Products.ManageProducts)]
         public async Task<IActionResult> AddImage(long productId)
         {
             //_logger.LogInformation($"Received productId: {productId}");
@@ -73,6 +82,7 @@ namespace Training.Cms.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = Permissions.Products.ManageProducts)]
         public async Task<IActionResult> AddImage(ProductImageViewModel productImageVM)
         {
             if (!ModelState.IsValid)
@@ -116,12 +126,16 @@ namespace Training.Cms.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = Permissions.Products.ManageProducts)]
         public async Task<IActionResult> UpdateThumbnail(long productId, string thumbnailPath)
         {
             await _productManagementService.UpdateThumbnail(productId, thumbnailPath);
             return Ok();
         }
+
+
         [HttpGet]
+        [Authorize(Policy = Permissions.Products.ManageProducts)]
         public async Task<IActionResult> Edit(long id)
         {
             var product = await _productManagementService.GetProductById(id);
@@ -137,7 +151,9 @@ namespace Training.Cms.Controllers
 
             return PartialView("Edit", productVM);
         }
+
         [HttpPost]
+        [Authorize(Policy = Permissions.Categories.ManageCategories)]
         public async Task<IActionResult> Edit(long id, ProductViewModel model)
         {
             if (id != model.Id)
@@ -166,11 +182,13 @@ namespace Training.Cms.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = Permissions.Products.ManageProducts)]
         public async Task<IActionResult> Delete(long id)
         {
             await _productManagementService.DeleteProduct(id);
             return RedirectToAction(nameof(Index));
         }
+
         public IActionResult Error(string message, string controllerName)
         {
             ViewData["ErrorMessage"] = message;

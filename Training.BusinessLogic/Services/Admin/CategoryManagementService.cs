@@ -1,15 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Training.BusinessLogic.Common;
 using Training.BusinessLogic.Dtos.Admin;
 using Training.BusinessLogic.Dtos.Base;
-using Training.Common.EnumTypes;
-using Training.Common.Helpers;
 using Training.DataAccess.Entities;
 using Training.Repository.UoW;
 
@@ -18,10 +11,13 @@ namespace Training.BusinessLogic.Services.Admin
     public interface ICategoryManagementService
     {
         Task<(List<CategoryDto> Categories, Pagination Pagination)> GetCategories(CommonSearchDto search);
+
         Task CreateCategory(CategoryDto categoryDto);
+
         Task<CategoryDto?> GetCategoryById(long id);
 
         Task<bool> UpdateCategory(CategoryDto userDto);
+
         Task DeleteCategory(long Id);
     }
     public class CategoryManagementService(IMapper mapper,
@@ -83,7 +79,6 @@ namespace Training.BusinessLogic.Services.Admin
 
             return mapper.Map<CategoryDto>(category);
         }
-
         public async Task<bool> UpdateCategory(CategoryDto categoryDto)
         {
             var categoryRepo = unitOfWork.GetRepository<Category>();

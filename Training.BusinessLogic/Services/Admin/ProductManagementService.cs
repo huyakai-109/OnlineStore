@@ -1,14 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Training.BusinessLogic.Common;
 using Training.BusinessLogic.Dtos.Admin;
 using Training.BusinessLogic.Dtos.Base;
-using Training.Common.Helpers;
 using Training.DataAccess.Entities;
 using Training.Repository.UoW;
 
@@ -17,13 +11,21 @@ namespace Training.BusinessLogic.Services.Admin
     public interface IProductManagementService
     {
         Task<(List<ProductDto> Products, Pagination Pagination)> GetProducts(CommonSearchDto search);
+
         Task CreateProduct(ProductDto productDto);
+
         Task AddImage(ProductImageDto productImageDto);
+
         Task<List<ProductImageDto>> GetProductImages(long productId);
+
         Task<List<CategoryDto>> GetCategories();
+
         Task<ProductDto?> GetProductById(long id);
+
         Task<bool> UpdateProduct(ProductDto userDto);
+
         Task UpdateThumbnail(long productId, string thumbnailPath);
+
         Task DeleteProduct(long Id);
     }
     public class ProductManagementService(IMapper mapper,
@@ -31,24 +33,42 @@ namespace Training.BusinessLogic.Services.Admin
     {
         public async Task<(List<ProductDto> Products, Pagination Pagination)> GetProducts(CommonSearchDto search)
         {
-            //var query = await unitOfWork.GetRepository<Product>().QueryAllWithIncludes(p => !p.IsDeleted, disableTracking: true, p => p.Category , p => p.CreatedByUser );
+            var query = from pr in await unitOfWork.GetRepository<Product>().QueryAll()
+                        join cat in await unitOfWork.GetRepository<Category>().QueryAll()
+                        on pr.CategoryId equals cat.Id
+                        join us in await unitOfWork.GetRepository<User>().QueryAll()
+                        on pr.CreatedBy equals us.Id
+                        join emp in await unitOfWork.GetRepository<Employee>().QueryAll()
+                        on us.Id equals emp.UserId
+                        select new ProductDto()
+                        {
+                            Id = pr.Id,
+                            Name = pr.Name,
+                            Description = pr.Description,
+                            Thumbnail = pr.Thumbnail,
+                            UnitPrice = pr.UnitPrice,
+                            CreatedBy = emp.FirstName,
+                            Category = cat.Name,
+                            CategoryId = cat.Id,
+                        };
 
-            //if (!string.IsNullOrEmpty(search.SearchQuery))
-            //{
-            //    var searchLower = search.SearchQuery.ToLower();
-            //    query = query.Where(p => p.Name.ToLower().Contains(searchLower)
-            //                          || p.Category.Name.ToLower().Contains(searchLower));
-            //}
+            if (!string.IsNullOrEmpty(search.SearchQuery))
+            {
+                var searchLower = search.SearchQuery.ToLower();
+                query = query.Where(p => p.Name!.ToLower().Contains(searchLower)
+                                      || p.Category!.ToLower().Contains(searchLower));
+            }
 
-            //var totalCount = await query.CountAsync();
-            //var products = await query.Skip((search.Skip - 1) * search.Take).Take(search.Take).ToListAsync();
+            var totalCount = await query.CountAsync();
+            var products = await query.Skip((search.Skip - 1) * search.Take).Take(search.Take).ToListAsync();
 
-            //var pagination = new Pagination(totalCount, products.Count, search.Skip, search.Take);
+            var pagination = new Pagination(totalCount, products.Count, search.Skip, search.Take);
 
-            //return (mapper.Map<List<ProductDto>>(products), pagination);
+            return (mapper.Map<List<ProductDto>>(products), pagination);
 
             throw new NotImplementedException();
         }
+
         public async Task CreateProduct(ProductDto productDto)
         {
             var product = mapper.Map<Product>(productDto);
@@ -65,6 +85,7 @@ namespace Training.BusinessLogic.Services.Admin
 
             await unitOfWork.SaveChanges();
         }
+
         public async Task AddImage(ProductImageDto productImageDto)
         {
             var productImage = mapper.Map<ProductImage>(productImageDto);
@@ -77,6 +98,7 @@ namespace Training.BusinessLogic.Services.Admin
                 await UpdateThumbnail(productImageDto.ProductId, productImageDto.Path);
             }
         }
+
         public async Task UpdateThumbnail(long productId, string thumbnailPath)
         {
             var productRepo = unitOfWork.GetRepository<Product>();
@@ -109,11 +131,13 @@ namespace Training.BusinessLogic.Services.Admin
 
             return true;
         }
+
         public async Task<List<CategoryDto>> GetCategories()
         {
             var categories = await unitOfWork.GetRepository<Category>().QueryCondition(c => !c.IsDeleted);
             return mapper.Map<List<CategoryDto>>(await categories.ToArrayAsync());
         }
+
         public async Task DeleteProduct(long Id)
         {
             var productRepo = unitOfWork.GetRepository<Product>();
@@ -148,6 +172,5 @@ namespace Training.BusinessLogic.Services.Admin
 
             return mapper.Map<List<ProductImageDto>>(listImage);
         }
-
     }
 }
