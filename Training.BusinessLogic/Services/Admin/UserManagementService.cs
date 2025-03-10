@@ -73,7 +73,7 @@ namespace Training.BusinessLogic.Services.Admin
                     NormalizedUserName = userDto.Email,
                     SecurityStamp = Guid.NewGuid().ToString(),
                     UserRoles = userRoles,
-                    PasswordHash = userDto.Password!.ComputeHash(),
+                    PasswordHash = userDto.Password!.HashPassword(),
                     IsActive = true,
                     LockoutEnabled = true,
                 }

@@ -4,6 +4,9 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using static Training.Common.Constants.GlobalConstants;
 using ClaimTypes = System.Security.Claims.ClaimTypes;
@@ -101,6 +104,19 @@ namespace Training.Common.Helpers
         {
             if (source == null) return string.Empty;
             return source == 0 ? string.Empty : source.Value.ToString(format);
+        }
+
+        public static string HashPassword(this string password)
+        {
+            PasswordHasher<string> passwordHasher = new(
+                new OptionsWrapper<PasswordHasherOptions>(
+                    new PasswordHasherOptions()
+                    {
+                        CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV3,
+                    }));
+
+            string hashPassword = passwordHasher.HashPassword(string.Empty, password);
+            return hashPassword;
         }
 
         /// <summary>

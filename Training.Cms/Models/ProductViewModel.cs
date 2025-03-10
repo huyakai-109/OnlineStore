@@ -12,18 +12,21 @@ namespace Training.Cms.Models
         [StringLength(255)]
         public string? Name { get; set; }
 
+
         [StringLength(1000)]
         public string? Description { get; set; }
 
+
         [StringLength(255)]
         public string? Thumbnail { get; set; } 
+
 
         [Required(ErrorMessage = "The Unit Price field is required.")]
         [Range(0, int.MaxValue)]
         public float UnitPrice { get; set; }
 
-     
         public string? Category { get; set; }
+
         public long CategoryId { get; set; }
 
         [Display(Name = "Created By")]
@@ -34,7 +37,9 @@ namespace Training.Cms.Models
         public int StockQuantity { get; set; }
 
         public bool IsDeleted { get; set; }
+
         public List<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
+
         public List<ProductImageDto> ProductImages { get; set; } = new List<ProductImageDto>(); 
     }
 }
