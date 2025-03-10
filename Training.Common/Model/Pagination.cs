@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Training.BusinessLogic.Common
+﻿namespace Training.BusinessLogic.Common
 {
     public class Pagination
     {

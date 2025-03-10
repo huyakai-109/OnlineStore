@@ -12,6 +12,7 @@ namespace Training.Cms.Mapper
         public UserManagementMapper()
         {
             CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<Employee, UserDto>();
             CreateMap<UserDto, UserViewModel>().ReverseMap();
             CreateMap<CommonSearchViewModel, CommonSearchDto>();
         }

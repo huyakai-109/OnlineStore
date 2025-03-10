@@ -22,8 +22,8 @@
                         <span asp-validation-for="LastName" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-2">
-                        <input asp-for="Email" class="form-control" placeholder=" " type="email" required />
-                        <label asp-for="Email" class="form-label">Email</label>
+                        <input asp-for="Email" class="form-control" placeholder=" " required />
+                        <label asp-for="Email" class="form-label">UserName</label>
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-2">
@@ -36,11 +36,6 @@
                             <option value="">Select a role</option>
                         </select>
                         <label asp-for="Role">Role</label>
-                    </div>
-                    <div class="form-floating mb-2">
-                        <input asp-for="CivilianId" class="form-control" placeholder=" " />
-                        <label asp-for="CivilianId" class="form-label">Civilian ID</label>
-                        <span asp-validation-for="CivilianId" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-2">
                         <input asp-for="DateOfBirth" class="form-control" placeholder=" " type="date" required />

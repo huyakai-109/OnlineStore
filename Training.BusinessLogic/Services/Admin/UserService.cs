@@ -31,7 +31,7 @@ namespace Training.BusinessLogic.Services.Admin
 
         public async Task<UserDto?> LoginAsync(UserDto userDto)
         {
-            var user = await userManager.FindByNameAsync(userDto.UserName!);
+            var user = await userManager.FindByNameAsync(userDto.Email!);
             if (user == null)
             {
                 return null;
@@ -42,7 +42,7 @@ namespace Training.BusinessLogic.Services.Admin
                 return null;
             }
 
-            var result = await signInManager.PasswordSignInAsync(userDto.UserName!, userDto.Password!, true, true);
+            var result = await signInManager.PasswordSignInAsync(userDto.Email!, userDto.Password!, true, true);
             if (!result.Succeeded)
             {
                 if (result.IsLockedOut)
