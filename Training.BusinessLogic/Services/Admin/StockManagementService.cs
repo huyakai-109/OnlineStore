@@ -41,6 +41,7 @@ namespace Training.BusinessLogic.Services.Admin
 
             return (mapper.Map<List<StockDto>>(stocks), pagination);    
         }
+
         public async Task AdjustStock(StockEventDto stockEventDto)
         {
             var stockRepo = unitOfWork.GetRepository<Stock>();
@@ -59,12 +60,12 @@ namespace Training.BusinessLogic.Services.Admin
                 }
                 stock.Quantity -= stockEventDto.Quantity;
             }
+
             var stockEvent = mapper.Map<StockEvent>(stockEventDto);
             stockEvent.CreatedAt = DateTimeOffset.UtcNow;
 
             await unitOfWork.GetRepository<StockEvent>().Add(stockEvent);
             await stockRepo.Update(stock);
-
             await unitOfWork.SaveChanges();
         }
     }

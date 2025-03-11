@@ -1,16 +1,13 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Training.Api.Models.Requests.Carts;
 using Training.Api.Models.Requests.Products;
 using Training.Api.Models.Responses.Base;
-using Training.Api.Models.Responses.Examples;
 using Training.Api.Models.Responses.Products;
 using Training.BusinessLogic.Dtos.Base;
 using Training.BusinessLogic.Dtos.Customers;
 using Training.BusinessLogic.Services;
+using Training.Common.Helpers;
 
 
 namespace Training.Api.Controllers
@@ -22,7 +19,6 @@ namespace Training.Api.Controllers
     {
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ResultRes<ProductRes?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResultRes<ProductRes?>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProductDetails(long id)
         {
             var response = new ResultRes<ProductRes?>();
@@ -54,7 +50,6 @@ namespace Training.Api.Controllers
             var response = new PaginationResultRes<List<ProductRes>>();
             try
             {
-
                 var products = await customerProductService.GetProducts(Mapper.Map<CommonSearchDto>(searchReq));
                 response.Result = Mapper.Map<List<ProductRes>>(products.Items);
                 response.Pagination = new PaginationRes(products.TotalCount, products.CurrentCount, searchReq.Skip, searchReq.Take);
@@ -72,19 +67,17 @@ namespace Training.Api.Controllers
 
         [HttpPost("add-to-cart")]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddToCart([FromBody] AddToCartReq addToCartReq)
         {
             var response = new ResultRes<bool>();
             try
             {
-                var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub);
-                if (userIdClaim == null)
+                var userId = this.User.Claims.GetUserId();
+                if (string.IsNullOrEmpty(userId.ToString()))
                 {
                     response.Error = "User ID not found";
                     return Unauthorized(response);
                 }
-                var userId = long.Parse(userIdClaim.Value);
 
                 var addToCartDto = Mapper.Map<AddToCartDto>(addToCartReq);
                 addToCartDto.UserId = userId;
