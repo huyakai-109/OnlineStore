@@ -1,61 +1,80 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
-using Training.BusinessLogic.Dtos;
+using System.Net.NetworkInformation;
 using Training.BusinessLogic.Dtos.Base;
 using Training.BusinessLogic.Dtos.Customers;
 using Training.DataAccess.Entities;
 using Training.Repository.UoW;
 using static Training.Common.Constants.GlobalConstants;
 
-
 namespace Training.BusinessLogic.Services
 {
-   
-     public interface ICustomerProductService
-     {
-            Task<(List<CustomerProductDto> Items, int TotalCount, int CurrentCount)> GetProducts(CommonSearchDto search);
-            Task<CustomerProductDto?> GetProductByIdAsync(long id);
-            Task<bool> AddToCartAsync(AddToCartDto addToCartDto);
+
+    public interface ICustomerProductService
+    {
+        Task<(List<CustomerProductDto> Items, int TotalCount, int CurrentCount)> GetProducts(CommonSearchDto search);
+
+        Task<CustomerProductDto?> GetProductByIdAsync(long id);
+
+        Task<bool> AddToCartAsync(AddToCartDto addToCartDto);
     }
-    
+
     public class ProductService(
         IMapper mapper,
         IUnitOfWork unitOfWork) : ICustomerProductService
     {
-   
+
         public async Task<CustomerProductDto?> GetProductByIdAsync(long id)
         {
-            var product = await unitOfWork.GetRepository<Product>().Single(p => p.Id == id, include: p => p.Include(x => x.Category));
+            var product = await (from pr in await unitOfWork.GetRepository<Product>().QueryAll()
+                                 join cat in await unitOfWork.GetRepository<Category>().QueryAll()
+                                 on pr.CategoryId equals cat.Id
+                                 where pr.Id == id
+                                 select new CustomerProductDto()
+                                 {
+                                     Id = pr.Id,
+                                     Name = pr.Name,
+                                     Description = pr.Description,
+                                     UnitPrice = pr.UnitPrice,
+                                     Category = cat.Name,
+                                     Thumbnail = pr.Thumbnail,
+                                 }).FirstOrDefaultAsync();
+
             if (product == null) return null;
 
             var productImages = await unitOfWork.GetRepository<ProductImage>().QueryCondition(pi => pi.ProductId == id);
             if (productImages == null) return null;
 
             var productDto = mapper.Map<CustomerProductDto>(product);
-            var listImage = await productImages.ToListAsync();  
-            productDto.ProductImage = productImages.Where(pi => !string.IsNullOrEmpty(pi.Path) && pi.Path != productDto.Thumbnail)
+            var listImage = await productImages.ToListAsync();
+            productDto.ProductImage = productImages.Where(pi => !string.IsNullOrEmpty(pi.Path))
                                                    .Select(pi => pi.Path)
-                                                   .ToList(); 
+                                                   .ToList();
 
             return productDto;
         }
 
         public async Task<(List<CustomerProductDto> Items, int TotalCount, int CurrentCount)> GetProducts(CommonSearchDto search)
         {
-            var query = await unitOfWork.GetRepository<Product>().QueryAllWithIncludes(p => !p.IsDeleted, disableTracking: true, p => p.Category);
+            var query = from pr in await unitOfWork.GetRepository<Product>().QueryAll()
+                        join cat in await unitOfWork.GetRepository<Category>().QueryAll()
+                        on pr.CategoryId equals cat.Id
+                        select new CustomerProductDto()
+                        {
+                            Id = pr.Id,
+                            Name = pr.Name,
+                            Description = pr.Description,
+                            UnitPrice = pr.UnitPrice,
+                            Category = cat.Name,
+                            Thumbnail = pr.Thumbnail,
+                        };
 
             if (!string.IsNullOrEmpty(search.SearchQuery))
             {
                 var searchLower = search.SearchQuery.ToLower();
 
-                query = query.Where(p => p.Category.Name.ToLower().Contains(searchLower)
-                                        || p.Name.ToLower().Contains(searchLower));
+                query = query.Where(p => p.Category!.ToLower().Contains(searchLower)
+                                        || p.Name!.ToLower().Contains(searchLower));
             }
             if (search.Sort == SortDirection.Ascending)
             {
@@ -67,7 +86,7 @@ namespace Training.BusinessLogic.Services
             }
 
             var totalCount = await query.CountAsync();
-            var products = await query.Skip((search.Skip -1) * search.Take).Take(search.Take).ToListAsync();
+            var products = await query.Skip((search.Skip - 1) * search.Take).Take(search.Take).ToListAsync();
             var currentCount = products.Count;
 
             return (mapper.Map<List<CustomerProductDto>>(products), totalCount, currentCount);
@@ -75,47 +94,54 @@ namespace Training.BusinessLogic.Services
 
         public async Task<bool> AddToCartAsync(AddToCartDto addToCartDto)
         {
-            using var transaction = await unitOfWork.DbContext.Database.BeginTransactionAsync();
+            var cartRepo = unitOfWork.GetRepository<Cart>();
+            var cartItemRepo = unitOfWork.GetRepository<CartItem>();
+            var stockRepo = unitOfWork.GetRepository<Stock>();
 
-            try
+            // get or create cart for the user
+            var cart = await cartRepo.Single(c => c.UserId == addToCartDto.UserId && !c.IsPurchased);
+            if (cart == null)
             {
-                var cartRepo = unitOfWork.GetRepository<Cart>();
-                var cartItemRepo = unitOfWork.GetRepository<CartItem>();
-                var stockRepo = unitOfWork.GetRepository<Stock>();
+                var random = new Random();
 
-                var stock = await stockRepo.Single(s => s.ProductId == addToCartDto.ProductId);
-                if (stock == null || stock.Quantity < addToCartDto.Quantity)
+                cart = new Cart()
                 {
-                    throw new InvalidOperationException("Insufficient stock quantity.");
-                }
+                    Id = random.NextInt64(),
+                    UserId = addToCartDto.UserId,
+                    IsPurchased = false,
+                };
 
-                // get or create cart for the user
-                var cart = await cartRepo.Single(c => c.UserId == addToCartDto.UserId && !c.IsPurchased, include: c => c.Include(c => c.CartItems));
-                if (cart == null)
+                await cartRepo.Add(cart);
+            }
+
+            // add  cart item
+            var cartItem = await cartItemRepo.Single(i => i.ProductId == addToCartDto.ProductId && i.CartId == cart.Id);
+
+            var stock = await stockRepo.Single(s => s.ProductId == addToCartDto.ProductId);
+            if (stock == null || stock.Quantity < addToCartDto.Quantity + (cartItem?.Quantity ?? 0))
+            {
+                throw new InvalidOperationException("Insufficient stock quantity.");
+            }
+
+            if (cartItem == null)
+            {
+                cartItem = new CartItem()
                 {
-                    cart = mapper.Map<Cart>(addToCartDto);
-                    cart.IsPurchased = false;
+                    CartId = cart.Id,
+                    ProductId = addToCartDto.ProductId,
+                    Quantity = addToCartDto.Quantity,
+                };
 
-                    await cartRepo.Add(cart);
-                    await unitOfWork.SaveChanges();
-                }
-
-                // add  cart item
-                var cartItem = mapper.Map<CartItem>(addToCartDto);
-                cartItem.CartId = cart.Id;
-
-                cart.CartItems.Add(cartItem);
                 await cartItemRepo.Add(cartItem);
-               
-                await unitOfWork.SaveChanges();
-                await transaction.CommitAsync(); 
-                return true;
             }
-            catch (Exception ) {
-                await transaction.RollbackAsync();
-                throw;
+            else
+            {
+                cartItem.Quantity += addToCartDto.Quantity;
+                await cartItemRepo.Update(cartItem);
             }
 
+            await unitOfWork.SaveChanges();
+            return true;
         }
     }
 }

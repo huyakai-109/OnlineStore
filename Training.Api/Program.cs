@@ -18,7 +18,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
-builder.Services.AddControllers();
 builder.Services.AddCors();
 
 var app = builder.Build();
