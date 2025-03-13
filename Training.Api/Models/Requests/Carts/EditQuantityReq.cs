@@ -3,6 +3,7 @@
     public class EditQuantityReq
     {
         public long ProductId { get; set; }
+
         public int NewQuantity { get; set; }
     }
 }

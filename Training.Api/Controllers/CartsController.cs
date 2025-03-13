@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using Training.Api.Models.Requests.Carts;
@@ -7,6 +6,7 @@ using Training.Api.Models.Responses.Base;
 using Training.Api.Models.Responses.Cart;
 using Training.BusinessLogic.Dtos.Customers;
 using Training.BusinessLogic.Services;
+using Training.Common.Helpers;
 
 namespace Training.Api.Controllers
 {
@@ -24,13 +24,12 @@ namespace Training.Api.Controllers
 
             try
             {
-                var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub);
-                if (userIdClaim == null)
+                var userId = this.User.Claims.GetUserId();
+                if (string.IsNullOrEmpty(userId.ToString()))
                 {
                     response.Error = "User ID not found";
                     return Unauthorized(response);
                 }
-                var userId = long.Parse(userIdClaim.Value);
 
                 var result = await cartService.GetCart(userId);
                 if (result == null)
@@ -46,7 +45,6 @@ namespace Training.Api.Controllers
             }
             catch (Exception ex)
             {
-
                 Logger.LogError("Get cart Item failed: {ex}", ex);
                 response.Success = false;
                 return InternalServerError(response);
@@ -55,20 +53,18 @@ namespace Training.Api.Controllers
 
         [HttpPost("edit-quantity")]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> EditQuantity(EditQuantityReq editQuantityReq)
         {
             var response = new ResultRes<bool>();
 
             try
             {
-                var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub);
-                if (userIdClaim == null)
+                var userId = this.User.Claims.GetUserId();
+                if (string.IsNullOrEmpty(userId.ToString()))
                 {
                     response.Error = "User ID not found";
                     return Unauthorized(response);
                 }
-                var userId = long.Parse(userIdClaim.Value);
 
                 var editCartItemDto = Mapper.Map<EditCartQuantityDto>(editQuantityReq);
                 editCartItemDto.UserId = userId;
@@ -103,19 +99,17 @@ namespace Training.Api.Controllers
 
         [HttpPost("remove-product")]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RemoveProduct(RemoveProductFCartReq removeProductFCartReq)
         {
             var response = new ResultRes<bool>();
             try
             {
-                var UserIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub);
-                if(UserIdClaim == null)
+                var userId = this.User.Claims.GetUserId();
+                if (string.IsNullOrEmpty(userId.ToString()))
                 {
                     response.Error = "User ID not found";
                     return Unauthorized(response);
                 }
-                var userId = long.Parse(UserIdClaim.Value);
 
                 var removeProductFCartDto = Mapper.Map<RemoveProductFCartDto>(removeProductFCartReq);
                 removeProductFCartDto.UserId = userId;
