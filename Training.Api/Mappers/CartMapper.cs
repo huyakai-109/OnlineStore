@@ -16,11 +16,7 @@ namespace Training.Api.Mappers
             CreateMap<EditQuantityReq, EditCartQuantityDto>();
             CreateMap<RemoveProductFCartReq, RemoveProductFCartDto>();
 
-            CreateMap<Cart, CartDto>();
-
-            CreateMap<CartItem, CartItemDto>()
-                .ForMember(ci => ci.ProductName, o => o.MapFrom(ci => ci.Product.Name))
-                .ForMember(ci => ci.Thumbnail, o => o.MapFrom(ci => ci.Product.Thumbnail));
+            CreateMap<CartItem, CartItemDto>();
 
             CreateMap<CartDto, CartRes>();  
             CreateMap<CartItemDto, CartItemRes>();  
