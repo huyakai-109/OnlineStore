@@ -35,6 +35,7 @@ namespace Training.DataAccess.DbContexts
             builder.ApplyConfiguration(new OrderDetailConfiguration());
             builder.ApplyConfiguration(new CartConfiguration());
             builder.ApplyConfiguration(new CartItemConfiguration());
+            builder.ApplyConfiguration(new DeliveryMethodConfiguration());
         }
     }
 }

@@ -234,3 +234,6 @@ Logs
 **/Grafana/data
 .idea
 **/data
+
+# App settings
+appsettings.json

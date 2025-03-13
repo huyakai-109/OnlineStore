@@ -24,5 +24,11 @@
                 public const string Audience = "Security:Jwt:Audience";
             }
         }
+
+        public struct StripSettings
+        {
+            public const string PublishableKey = "StripSettings:PublishableKey";
+            public const string SerectKey = "StripSettings:SerectKey";
+        }
     }
 }

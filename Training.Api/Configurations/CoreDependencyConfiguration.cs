@@ -20,6 +20,7 @@ namespace Training.Api.Configurations
             collection.AddScoped<ITokenService, TokenService>();
             collection.AddScoped<ICartService, CartService>();
             collection.AddScoped<IOrderService, OrderService>();
+            collection.AddScoped<IPaymentService, PaymentService>();
         }
     }
 }
