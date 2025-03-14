@@ -15,6 +15,10 @@ namespace Training.DataAccess.Entities
 
         public bool IsPurchased { get; set; }
 
+        public string? PaymentIntentId { get; set; }
+
+        public string? ClientSecret { get; set; }
+
         public bool IsDeleted { get; set; }
 
         public virtual User User { get; set; }

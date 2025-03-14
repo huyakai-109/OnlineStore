@@ -25,10 +25,10 @@
             }
         }
 
-        public struct StripSettings
+        public struct StripeSettings
         {
-            public const string PublishableKey = "StripSettings:PublishableKey";
-            public const string SerectKey = "StripSettings:SerectKey";
+            public const string PublishableKey = "StripeSettings:PublishableKey";
+            public const string SerectKey = "StripeSettings:SerectKey";
         }
     }
 }
