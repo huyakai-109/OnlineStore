@@ -20,7 +20,9 @@ namespace Training.BusinessLogic.Services
             var cart = await unitOfWork.GetRepository<Cart>().Single(c => c.UserId == userId && !c.IsPurchased);
             if (cart == null) return null;
 
-            var product = (from ca in await unitOfWork.GetRepository<CartItem>().QueryAll()
+            var cartDto = new CartDto();
+
+            var products = (from ca in await unitOfWork.GetRepository<CartItem>().QueryAll()
                            join pr in await unitOfWork.GetRepository<Product>().QueryAll()
                            on ca.ProductId equals pr.Id
                            where ca.CartId == cart.Id
@@ -35,7 +37,12 @@ namespace Training.BusinessLogic.Services
                                Thumbnail = pr.Thumbnail,
                            }).ToList();
 
-            return mapper.Map<CartDto>(cart);
+            cartDto.Id = cart.Id;
+            cartDto.CartItems = products;
+            cartDto.ClientSecret = cart.ClientSecret;
+            cartDto.PaymentIntentId = cart.PaymentIntentId;
+
+            return cartDto;
         }
 
         public async Task<bool> EditQuantity(EditCartQuantityDto editCartQuantityDto)
