@@ -6,6 +6,7 @@ using Training.BusinessLogic.Dtos.Admin;
 using Training.BusinessLogic.Dtos.Base;
 using Training.BusinessLogic.Services.Admin;
 using Training.Cms.Models;
+using Training.Common.Constants;
 using Training.Common.EnumTypes;
 
 namespace Training.Cms.Controllers
@@ -23,6 +24,7 @@ namespace Training.Cms.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = Permissions.Stocks.ViewStocks)]
         public async Task<IActionResult> Index(CommonSearchViewModel search)
         {
             var (stocks, pagination) = await _stockManagementService.GetStocks(_mapper.Map<CommonSearchDto>(search));
@@ -35,6 +37,8 @@ namespace Training.Cms.Controllers
 
             return View(stockList);
         }
+
+        [Authorize(Policy = Permissions.Stocks.ManageStocks)]
         public IActionResult Edit(long id)
         {
             var model = new StockEventViewModel
@@ -45,6 +49,7 @@ namespace Training.Cms.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = Permissions.Stocks.ManageStocks)]
         public async Task<IActionResult> Edit(StockEventViewModel model)
         {
             if (!ModelState.IsValid)

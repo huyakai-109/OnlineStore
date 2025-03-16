@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Training.BusinessLogic.Dtos.Base;
 using Training.BusinessLogic.Services.Admin;
 using Training.Cms.Models;
+using Training.Common.Constants;
 
 namespace Training.Cms.Controllers
 {
@@ -21,6 +22,7 @@ namespace Training.Cms.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = Permissions.StockEvents.ViewStockEvents)]
         public async Task<IActionResult> Index(CommonSearchViewModel search)
         {
             var (stockEvents, pagination) = await _stockEventManagementService.GetStockEvents(_mapper.Map<CommonSearchDto>(search));

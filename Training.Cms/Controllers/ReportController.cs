@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Training.BusinessLogic.Dtos.Base;
 using Training.BusinessLogic.Services.Admin;
 using Training.Cms.Models;
-using Training.DataAccess.Entities;
+using Training.Common.Constants;
 
 namespace Training.Cms.Controllers
 {
@@ -19,6 +19,7 @@ namespace Training.Cms.Controllers
             _mapper = mapper;
         }
 
+        [Authorize(Policy = Permissions.Reports.ViewReports)]
         public async Task<IActionResult> Index(CommonSearchViewModel search)
         {
             var (stocks, pagination) = await _reportService.GetLowStockProducts(_mapper.Map<CommonSearchDto>(search));
@@ -30,6 +31,7 @@ namespace Training.Cms.Controllers
             return View(stockList);
         }
 
+        [Authorize(Policy = Permissions.Reports.ViewReports)]
         public async Task<IActionResult> TodayOrders(CommonSearchViewModel search)
         {
             var (orders, pagination) = await _reportService.GetTodayOrders(_mapper.Map<CommonSearchDto>(search));
@@ -43,6 +45,7 @@ namespace Training.Cms.Controllers
             return PartialView("_TodaysOrders", orderList);
         }
 
+        [Authorize(Policy = Permissions.Reports.ViewReports)]
         public async Task<IActionResult> HighestOrders(CommonSearchViewModel search)
         {
             var (orders, pagination) = await _reportService.GetHighestOrders(_mapper.Map<CommonSearchDto>(search));

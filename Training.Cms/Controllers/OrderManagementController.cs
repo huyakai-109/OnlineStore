@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Training.BusinessLogic.Dtos.Base;
 using Training.BusinessLogic.Services.Admin;
 using Training.Cms.Models;
+using Training.Common.Constants;
 
 namespace Training.Cms.Controllers
 {
@@ -16,6 +18,8 @@ namespace Training.Cms.Controllers
             _orderManagementService = orderManagementService;
             _mapper = mapper;
         }
+
+        [Authorize(Policy = Permissions.Orders.ViewOrders)]
         public async Task<IActionResult> Index(CommonSearchViewModel search)
         {
             var (orders, pagination) = await _orderManagementService.GetOrders(_mapper.Map<CommonSearchDto>(search));

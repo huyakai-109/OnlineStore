@@ -16,7 +16,11 @@ namespace Training.Cms.Controllers
         private readonly IMapper _mapper;
         private readonly ILogger<ProductManagementController> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public ProductManagementController(IProductManagementService productManagementService, IMapper mapper, ILogger<ProductManagementController> logger, IWebHostEnvironment webHostEnvironment)
+
+        public ProductManagementController(
+            IProductManagementService productManagementService, 
+            IMapper mapper, ILogger<ProductManagementController> logger, 
+            IWebHostEnvironment webHostEnvironment)
         {
             _productManagementService = productManagementService;
             _mapper = mapper;
@@ -24,7 +28,7 @@ namespace Training.Cms.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        [Authorize(Policy = Permissions.Categories.ViewCategories)]
+        [Authorize(Policy = Permissions.Products.ViewProducts)]
         public async Task<IActionResult> Index([FromQuery] CommonSearchViewModel search)
         {
             var (products, pagination) = await _productManagementService.GetProducts(_mapper.Map<CommonSearchDto>(search));
