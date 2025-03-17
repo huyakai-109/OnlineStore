@@ -106,7 +106,7 @@ namespace Training.BusinessLogic.Services
 
                 cart = new Cart()
                 {
-                    Id = random.NextInt64(),
+                    Id = random.NextInt64(1, long.MaxValue),
                     UserId = addToCartDto.UserId,
                     IsPurchased = false,
                 };

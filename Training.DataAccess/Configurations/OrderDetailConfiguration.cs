@@ -13,12 +13,8 @@ namespace Training.DataAccess.Configurations
                 .HasForeignKey(i => i.OrderId);
 
             builder.HasOne(i => i.Product)
-                .WithMany(i => i.OrderDetails)
-                .HasForeignKey(i => i.ProductId);
-
-            builder.HasOne(i => i.Product)
-               .WithMany()
-               .HasForeignKey(i => i.OrderId);
+               .WithMany(i => i.OrderDetails)
+               .HasForeignKey(i => i.ProductId);
         }
     }
 }
