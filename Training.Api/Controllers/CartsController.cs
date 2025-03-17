@@ -17,7 +17,6 @@ namespace Training.Api.Controllers
     {
         [HttpGet]
         [ProducesResponseType(typeof(ResultRes<CartRes>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResultRes<CartRes>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetCart()
         {
             var response = new ResultRes<CartRes>();

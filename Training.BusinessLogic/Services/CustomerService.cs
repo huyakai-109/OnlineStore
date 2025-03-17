@@ -75,7 +75,7 @@ namespace Training.BusinessLogic.Services
                     await unitOfWork.SaveChanges();
                     await transaction.CommitAsync();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     if(transaction != null)
                     {

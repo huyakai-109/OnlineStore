@@ -15,6 +15,9 @@ namespace Training.DataAccess.Entities
 
         public long CustomerId { get; set; }
 
+        [Column(TypeName = "decimal(19,2)")]
+        public decimal TotalAmount { get; set; }
+
         public bool IsDeleted { get; set; }
 
         public virtual User Customer { get; set; }

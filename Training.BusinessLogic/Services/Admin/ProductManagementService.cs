@@ -38,8 +38,9 @@ namespace Training.BusinessLogic.Services.Admin
                         on pr.CategoryId equals cat.Id
                         join us in await unitOfWork.GetRepository<User>().QueryAll()
                         on pr.CreatedBy equals us.Id
-                        join emp in await unitOfWork.GetRepository<Employee>().QueryAll()
-                        on us.Id equals emp.UserId
+                        join emp in await unitOfWork.GetRepository<Employee>().QueryAll() 
+                        on us.Id equals emp.UserId into lemp
+                        from emp in lemp.DefaultIfEmpty()
                         select new ProductDto()
                         {
                             Id = pr.Id,
@@ -47,7 +48,7 @@ namespace Training.BusinessLogic.Services.Admin
                             Description = pr.Description,
                             Thumbnail = pr.Thumbnail,
                             UnitPrice = pr.UnitPrice,
-                            CreatedBy = emp.FirstName,
+                            CreatedBy = emp != null ? emp.FirstName : string.Empty,
                             Category = cat.Name,
                             CategoryId = cat.Id,
                         };
