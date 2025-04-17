@@ -5,6 +5,7 @@
         public const string DatabaseConnection = "ConnectionStrings:MyDatabase";
         public const string EnableSwagger = "EnableSwagger";
         public const string AutoMigration = "AutoMigration";
+        public const string StorageUrl = "StorageUrl";
 
         public struct Security
         {
@@ -29,6 +30,16 @@
         {
             public const string PublishableKey = "StripeSettings:PublishableKey";
             public const string SerectKey = "StripeSettings:SerectKey";
+        }
+
+        public struct MinIO
+        {
+            public const string Endpoint = "MinIO:Endpoint";
+            public const string AccessKey = "MinIO:AccessKey";
+            public const string SecretKey = "MinIO:SecretKey";
+            public const string Secure = "MinIO:Secure";
+            public const string Bucket = "MinIO:Bucket";
+            public const string Region = "MinIO:Region";
         }
     }
 }

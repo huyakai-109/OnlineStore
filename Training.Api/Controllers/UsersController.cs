@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Training.Api.Models.Requests.Users;
 using Training.Api.Models.Responses.Base;
@@ -17,7 +16,7 @@ namespace Training.Api.Controllers
     {
         [HttpPost("register")]
         [ProducesResponseType(typeof(ResultRes<bool>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Register([FromBody] RegisterReq registerRequest)
+        public async Task<IActionResult> Register([FromForm] RegisterReq registerRequest)
         {
             var response = new ResultRes<bool>();
 

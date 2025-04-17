@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Training.BusinessLogic.Dtos.Customers;
+using Training.BusinessLogic.Dtos.Storage;
 using Training.Common.Constants;
 using Training.Common.Helpers;
 using Training.DataAccess.Entities;
@@ -20,6 +22,7 @@ namespace Training.BusinessLogic.Services
     public class CustomerService(
         IMapper mapper,
         UserManager<User> userManager,
+        IStorageService storageService,
         IUnitOfWork unitOfWork) : ICustomerService
     {
         public async Task<bool> RegisterCustomer(CustomerDto customerDto)
@@ -68,7 +71,20 @@ namespace Training.BusinessLogic.Services
 
                     if(customerDto.Avatar !=null && customerDto.Avatar.Length > 0)
                     {
-                        // code when config minIO is done
+                        var uploadFileReqDto = new UploadFileReqDto
+                        {
+                            File = customerDto.Avatar,
+                            Metadata = new Dictionary<string, string>
+                            {
+                                { "Source", "Training" },
+                                { "TypeFile", "Customer Avatar" }
+                            }
+                        };
+                        var (success, fileResult) = await storageService.Upload(uploadFileReqDto);
+                        if (success)
+                        {
+                            customer.Avatar = fileResult;
+                        }
                     }
 
                     await customerRepo.Add(customer);
