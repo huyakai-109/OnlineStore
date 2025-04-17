@@ -312,5 +312,15 @@ namespace Training.Common.Helpers
         {
             return culture.Name == Culture.Vietnam;
         }
+
+        public static string GetFile(this string fileName, string url)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return string.Empty;
+            }
+
+            return string.Concat(url, fileName);
+        }
     }
 }
